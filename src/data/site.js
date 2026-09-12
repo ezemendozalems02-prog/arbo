@@ -60,7 +60,7 @@ export const SITE = {
   // Imágenes editoriales DEMO — reemplazar por fotografía real del local cuando esté disponible.
   images: {
     heroVideo: '',
-    hero: 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1800&q=85',
+    hero: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1800&q=85',
     manifesto: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1200&q=80',
     cafe: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=1000&q=80',
     vino: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1000&q=80',
