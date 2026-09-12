@@ -17,12 +17,12 @@ export default function Hero() {
         initial={{ scale: 1.12 }} animate={{ scale: 1 }} transition={{ duration: 1.8, ease: [0.16, 1, 0.3, 1] }}>
         <img
           src={SITE.images.hero}
-          alt="Café de especialidad y vino en Arbo Patagonia, Trevelin"
+          alt="Bosque y montañas verdes de la Patagonia, entorno de Arbo en Trevelin"
           style={{ width: '100%', height: '130%', objectFit: 'cover' }}
         />
       </motion.div>
 
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(12,16,20,0.32) 0%, rgba(15,25,19,0.58) 48%, rgba(12,16,20,0.94) 100%)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg, rgba(15,30,20,0.14) 0%, rgba(20,35,24,0.4) 50%, rgba(12,20,15,0.86) 100%)' }} />
 
       <div style={{ position: 'relative', zIndex: 2, textAlign: 'center', padding: '0 24px', maxWidth: 880 }}>
         <motion.p initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }}
