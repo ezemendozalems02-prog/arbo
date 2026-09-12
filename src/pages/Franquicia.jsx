@@ -41,7 +41,7 @@ function DossierForm() {
         <label style={label}>Nombre *</label>
         <input required style={inputStyle} value={form.nombre} onChange={set('nombre')} />
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 16 }}>
         <div>
           <label style={label}>Empresa</label>
           <input style={inputStyle} value={form.empresa} onChange={set('empresa')} />
@@ -51,7 +51,7 @@ function DossierForm() {
           <input style={inputStyle} value={form.ciudad} onChange={set('ciudad')} />
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: 16 }}>
         <div>
           <label style={label}>Email *</label>
           <input required type="email" style={inputStyle} value={form.email} onChange={set('email')} />

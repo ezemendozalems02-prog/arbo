@@ -3,8 +3,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { COLORS, FONTS } from '../styles/theme'
 import { MENU_CATEGORIES, MENU_ITEMS } from '../data/menu'
 import { useCartContext } from '../context/CartContext'
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll'
 import Reveal from '../components/ui/Reveal'
 import Button from '../components/ui/Button'
+import Portal from '../components/ui/Portal'
 import { CheckIcon } from '../components/ui/icons'
 
 const money = (n) => `$${n.toLocaleString('es-AR')}`
@@ -154,6 +156,7 @@ export default function Pedidos() {
   const [step, setStep] = useState('delivery')
   const [orderId, setOrderId] = useState(null)
   const [form, setForm] = useState({ method: 'delivery', nombre: '', telefono: '', direccion: '', indicaciones: '' })
+  useLockBodyScroll(checkoutOpen)
 
   const getQty = (id) => items.find(i => i.id === id)?.qty ?? 0
   const filtered = MENU_ITEMS.filter(i => i.orderable && i.cat === activeCat)
@@ -219,7 +222,8 @@ export default function Pedidos() {
             style={{
               position: 'fixed', left: 0, right: 0, bottom: 0, zIndex: 300,
               background: COLORS.greenDark, border: 'none', cursor: 'pointer',
-              padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '16px 24px calc(16px + env(safe-area-inset-bottom))',
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
               boxShadow: '0 -8px 30px rgba(12,16,20,0.25)',
             }}>
             <span style={{ fontFamily: FONTS.sans, fontSize: 12, fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: COLORS.cream }}>
@@ -231,28 +235,30 @@ export default function Pedidos() {
       </AnimatePresence>
 
       {/* Checkout modal */}
-      <AnimatePresence>
-        {checkoutOpen && (
-          <>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              onClick={() => step !== 'done' && setCheckoutOpen(false)}
-              style={{ position: 'fixed', inset: 0, background: 'rgba(12,16,20,0.7)', zIndex: 600 }} />
-            <motion.div
-              role="dialog" aria-modal="true"
-              initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 24 }}
-              transition={{ duration: 0.3 }}
-              style={{
-                position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 601,
-                background: COLORS.cream, width: 'min(520px, calc(100vw - 32px))', maxHeight: '88vh', overflowY: 'auto',
-                padding: '40px 36px',
-              }}>
-              {step === 'delivery' && <DeliveryStep form={form} setForm={setForm} onNext={() => setStep('summary')} />}
-              {step === 'summary' && <SummaryStep items={items} subtotal={subtotal} delivery={delivery} total={total} form={form} onBack={() => setStep('delivery')} onConfirm={confirmOrder} />}
-              {step === 'done' && <DoneStep orderId={orderId} onNewOrder={newOrder} />}
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      <Portal>
+        <AnimatePresence>
+          {checkoutOpen && (
+            <>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => step !== 'done' && setCheckoutOpen(false)}
+                style={{ position: 'fixed', inset: 0, background: 'rgba(12,16,20,0.7)', zIndex: 600 }} />
+              <motion.div
+                role="dialog" aria-modal="true"
+                initial={{ opacity: 0, y: 24, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 24 }}
+                transition={{ duration: 0.3 }}
+                style={{
+                  position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 601,
+                  background: COLORS.cream, width: 'min(520px, calc(100vw - 32px))', maxHeight: '88vh', overflowY: 'auto',
+                  padding: '40px 28px',
+                }}>
+                {step === 'delivery' && <DeliveryStep form={form} setForm={setForm} onNext={() => setStep('summary')} />}
+                {step === 'summary' && <SummaryStep items={items} subtotal={subtotal} delivery={delivery} total={total} form={form} onBack={() => setStep('delivery')} onConfirm={confirmOrder} />}
+                {step === 'done' && <DoneStep orderId={orderId} onNewOrder={newOrder} />}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </Portal>
 
       <style>{`@media (min-width: 769px) { .arbo-cart-bar { left: auto; right: 24px; bottom: 24px; width: 320px; } }`}</style>
     </div>

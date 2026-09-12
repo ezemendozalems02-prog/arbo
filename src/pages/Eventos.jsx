@@ -3,8 +3,10 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { COLORS, FONTS } from '../styles/theme'
 import { SITE } from '../data/site'
 import { EVENT_CATEGORIES, EVENTS } from '../data/events'
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll'
 import Reveal from '../components/ui/Reveal'
 import Button from '../components/ui/Button'
+import Portal from '../components/ui/Portal'
 import { CloseIcon } from '../components/ui/icons'
 
 const money = (n) => n ? `$${n.toLocaleString('es-AR')}` : ''
@@ -12,11 +14,17 @@ const dateFmt = (iso) => iso ? new Date(iso + 'T00:00:00').toLocaleDateString('e
 
 function EventCard({ ev, onOpen }) {
   return (
-    <motion.div
+    <motion.button
+      type="button"
       initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: '-40px' }}
       transition={{ duration: 0.55 }}
-      style={{ background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}`, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column' }}
+      style={{
+        background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}`, overflow: 'hidden', cursor: 'pointer',
+        display: 'flex', flexDirection: 'column', textAlign: 'left', width: '100%', padding: 0, font: 'inherit',
+        color: 'inherit', borderRadius: 0,
+      }}
       onClick={() => onOpen(ev)}
+      aria-label={`Ver experiencia: ${ev.title}`}
     >
       <div style={{ height: 220, overflow: 'hidden' }}>
         <img src={ev.image} alt={ev.title} loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -39,14 +47,15 @@ function EventCard({ ev, onOpen }) {
           </span>
         </div>
       </div>
-    </motion.div>
+    </motion.button>
   )
 }
 
 function EventModal({ ev, onClose }) {
   const waMsg = encodeURIComponent(`Hola Arbo! Quiero reservar mi lugar en "${ev.title}".`)
+  useLockBodyScroll(true)
   return (
-    <>
+    <Portal>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose}
         style={{ position: 'fixed', inset: 0, background: 'rgba(12,16,20,0.75)', zIndex: 600 }} />
       <motion.div
@@ -94,7 +103,7 @@ function EventModal({ ev, onClose }) {
           </Button>
         </div>
       </motion.div>
-    </>
+    </Portal>
   )
 }
 

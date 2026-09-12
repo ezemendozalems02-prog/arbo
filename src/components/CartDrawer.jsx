@@ -1,14 +1,18 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { COLORS, FONTS } from '../styles/theme'
 import { useCartContext } from '../context/CartContext'
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll'
 import Button from './ui/Button'
+import Portal from './ui/Portal'
 
 const money = (n) => `$${n.toLocaleString('es-AR')}`
 
 export default function CartDrawer({ onCheckout }) {
   const { items, increaseQuantity, decreaseQuantity, removeItem, subtotal, itemCount, drawerOpen, setDrawerOpen } = useCartContext()
+  useLockBodyScroll(drawerOpen)
 
   return (
+    <Portal>
     <AnimatePresence>
       {drawerOpen && (
         <>
@@ -55,10 +59,10 @@ export default function CartDrawer({ onCheckout }) {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', border: `1px solid ${COLORS.lineOnDark}`, flexShrink: 0 }}>
                     <button onClick={() => decreaseQuantity(item.id)} aria-label={`Quitar una unidad de ${item.name}`}
-                      style={{ background: 'none', border: 'none', color: COLORS.cream, width: 30, height: 30, cursor: 'pointer', fontSize: 15 }}>−</button>
+                      style={{ background: 'none', border: 'none', color: COLORS.cream, width: 38, height: 38, cursor: 'pointer', fontSize: 16 }}>−</button>
                     <span style={{ fontFamily: FONTS.sans, fontSize: 13, color: COLORS.cream, width: 24, textAlign: 'center' }}>{item.qty}</span>
                     <button onClick={() => increaseQuantity(item.id)} aria-label={`Agregar una unidad de ${item.name}`}
-                      style={{ background: 'none', border: 'none', color: COLORS.cream, width: 30, height: 30, cursor: 'pointer', fontSize: 15 }}>+</button>
+                      style={{ background: 'none', border: 'none', color: COLORS.cream, width: 38, height: 38, cursor: 'pointer', fontSize: 16 }}>+</button>
                   </div>
                   <button onClick={() => removeItem(item.id)} aria-label={`Quitar ${item.name} del carrito`}
                     style={{ background: 'none', border: 'none', color: COLORS.onDarkFaint, fontSize: 16, cursor: 'pointer' }}>✕</button>
@@ -79,5 +83,6 @@ export default function CartDrawer({ onCheckout }) {
         </>
       )}
     </AnimatePresence>
+    </Portal>
   )
 }

@@ -18,8 +18,8 @@ export default function WhatsAppButton({ lifted = false }) {
       className="arbo-whatsapp-btn"
       style={{
         position: 'fixed',
-        right: 20,
-        bottom: lifted ? 92 : 20,
+        right: 'max(20px, env(safe-area-inset-right))',
+        bottom: lifted ? 'calc(92px + env(safe-area-inset-bottom))' : 'calc(20px + env(safe-area-inset-bottom))',
         zIndex: 350,
         width: 52,
         height: 52,

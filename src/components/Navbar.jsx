@@ -4,8 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { COLORS, FONTS } from '../styles/theme'
 import { SITE } from '../data/site'
 import { useCartContext } from '../context/CartContext'
+import { useLockBodyScroll } from '../hooks/useLockBodyScroll'
 import { CartIcon, MenuIcon, CloseIcon, InstagramIcon } from './ui/icons'
 import Button from './ui/Button'
+import Portal from './ui/Portal'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
@@ -29,10 +31,7 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : ''
-    return () => { document.body.style.overflow = '' }
-  }, [open])
+  useLockBodyScroll(open)
 
   return (
     <>
@@ -84,7 +83,7 @@ export default function Navbar() {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
             <button onClick={() => setDrawerOpen(true)} aria-label="Ver carrito"
-              style={{ position: 'relative', background: 'none', border: 'none', color: COLORS.cream, cursor: 'pointer', padding: 6, display: 'flex' }}>
+              style={{ position: 'relative', background: 'none', border: 'none', color: COLORS.cream, cursor: 'pointer', padding: 10, display: 'flex' }}>
               <CartIcon />
               {itemCount > 0 && (
                 <span style={{
@@ -100,22 +99,24 @@ export default function Navbar() {
             </span>
 
             <button onClick={() => setOpen(v => !v)} aria-label={open ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={open}
-              className="arbo-hamburger" style={{ display: 'none', background: 'none', border: 'none', color: COLORS.cream, cursor: 'pointer', padding: 6 }}>
+              className="arbo-hamburger" style={{ display: 'none', background: 'none', border: 'none', color: COLORS.cream, cursor: 'pointer', padding: 10 }}>
               {open ? <CloseIcon /> : <MenuIcon />}
             </button>
           </div>
         </div>
       </header>
 
+      <Portal>
       <AnimatePresence>
         {open && (
           <motion.div
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             style={{
-              position: 'fixed', inset: 0, zIndex: 890, background: 'rgba(12,16,20,0.98)',
+              position: 'fixed', inset: 0, zIndex: 950, background: 'rgba(12,16,20,0.98)',
               backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center', gap: 28, padding: 24,
+              overflowY: 'auto',
             }}
           >
             <div style={{ position: 'absolute', top: 26, left: 24, fontFamily: FONTS.serif, color: COLORS.cream, fontSize: 20, letterSpacing: '0.22em' }}>ARBO</div>
@@ -153,6 +154,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+      </Portal>
 
       <style>{`
         @media (max-width: 900px) {
