@@ -3,13 +3,18 @@ import { SITE } from '../../data/site'
 import SectionLabel from '../../components/ui/SectionLabel'
 import Reveal from '../../components/ui/Reveal'
 import Button from '../../components/ui/Button'
+import { TreeIcon } from '../../components/ui/icons'
 
 export default function OrderTeaser() {
   return (
-    <section style={{ position: 'relative', overflow: 'hidden', minHeight: 420 }}>
+    <section style={{ position: 'relative', overflow: 'hidden', minHeight: 460 }}>
       <div style={{ position: 'absolute', inset: 0 }}>
-        <img src={SITE.images.gastronomia} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(120deg, rgba(12,16,20,0.88) 0%, rgba(48,77,59,0.72) 100%)' }} />
+        <img src={SITE.images.patagonia} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(120deg, rgba(12,16,20,0.86) 0%, rgba(31,64,47,0.8) 55%, rgba(12,16,20,0.9) 100%)' }} />
+        <TreeIcon
+          aria-hidden="true"
+          style={{ position: 'absolute', right: '4%', bottom: '-6%', width: 'min(46vw, 420px)', height: 'auto', color: COLORS.cream, opacity: 0.1 }}
+        />
       </div>
       <div style={{ position: 'relative', zIndex: 2, maxWidth: 1360, margin: '0 auto', padding: '110px 28px', textAlign: 'center' }}>
         <Reveal>

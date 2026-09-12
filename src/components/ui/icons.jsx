@@ -63,3 +63,15 @@ export const CoffeeIcon = (props) => (
     <path d="M7 4c0 1-1 1-1 2M11 4c0 1-1 1-1 2" />
   </svg>
 )
+
+// Árbol de líneas finas — motivo botánico de marca (ARBO), usado como
+// detalle decorativo grande y sutil en banners, nunca como ilustración
+// protagonista.
+export const TreeIcon = (props) => (
+  <svg viewBox="0 0 200 260" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" {...props}>
+    <path d="M100 250V150" />
+    <path d="M100 190c-18-8-34-4-46 10M100 175c16-10 30-8 42 4M100 210c-14-6-26-2-36 8M100 160c12-8 22-6 32 2" />
+    <path d="M100 150c-30 0-52-20-52-48 0-22 14-38 30-46-4-10 0-22 10-28 10 8 14 18 12 28 16 8 28 24 28 46 0 28-22 48-52 48Z" />
+    <path d="M100 100c-8-10-8-22 0-32M100 100c8-10 8-22 0-32M74 116c-6-12-4-24 4-32M126 116c6-12 4-24-4-32" opacity="0.6" />
+  </svg>
+)
