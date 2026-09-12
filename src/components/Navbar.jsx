@@ -1,160 +1,163 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-
-const C = {
-  dark:  '#1F2E24',
-  deep:  '#314D39',
-  cream: '#F3EFE7',
-  gold:  '#B8A96A',
-  mid:   '#4C6B50',
-}
-
-const links = [
-  { label: 'Inicio',    to: '/' },
-  { label: 'Menú',      to: '/menu' },
-  { label: 'Take Away', to: '/takeaway' },
-  { label: 'Nosotros',  to: '/nuestra-selva' },
-  { label: 'Eventos',   to: '/galeria' },
-  { label: 'Reservas',  to: '/contacto' },
-]
+import { COLORS, FONTS } from '../styles/theme'
+import { SITE } from '../data/site'
+import { useCartContext } from '../context/CartContext'
+import { CartIcon, MenuIcon, CloseIcon, InstagramIcon } from './ui/icons'
+import Button from './ui/Button'
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
-  const [open, setOpen]         = useState(false)
+  const [open, setOpen] = useState(false)
   const location = useLocation()
+  const { itemCount, setDrawerOpen } = useCartContext()
+
+  // Cierra el menú fullscreen al cambiar de ruta — ajustado durante el
+  // render (patrón "adjusting state when props change") en vez de en un
+  // efecto, para evitar un render en cascada innecesario.
+  const [prevPathname, setPrevPathname] = useState(location.pathname)
+  if (location.pathname !== prevPathname) {
+    setPrevPathname(location.pathname)
+    setOpen(false)
+  }
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 50)
-    window.addEventListener('scroll', fn)
-    return () => window.removeEventListener('scroll', fn)
+    const onScroll = () => setScrolled(window.scrollY > 40)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
-  useEffect(() => setOpen(false), [location])
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : ''
+    return () => { document.body.style.overflow = '' }
+  }, [open])
 
   return (
     <>
-      <header style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 999,
-        transition: 'all 0.45s ease',
-        background: scrolled ? 'rgba(31,46,36,0.94)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(20px)' : 'none',
-        borderBottom: scrolled ? '1px solid rgba(76,107,80,0.3)' : 'none',
-      }}>
-        <div style={{ maxWidth: 1320, margin: '0 auto', padding: '0 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 76 }}>
-
-          <Link to="/" style={{ textDecoration: 'none' }}>
-            <div style={{ fontFamily: "'Cormorant Garamond', serif", lineHeight: 1.1 }}>
-              <div style={{ color: C.cream, fontSize: 22, fontWeight: 600, letterSpacing: '0.22em' }}>MOULI</div>
-              <div style={{ color: C.gold, fontSize: 9, letterSpacing: '0.32em', textTransform: 'uppercase', marginTop: 3, opacity: 0.85 }}>Café · Cocina · Encuentros</div>
+      <header
+        style={{
+          position: 'fixed', top: 0, left: 0, right: 0, zIndex: 900,
+          transition: 'background 0.4s ease, backdrop-filter 0.4s ease, border-color 0.4s ease, height 0.35s ease',
+          background: scrolled ? 'rgba(31,64,47,0.92)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(14px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(14px)' : 'none',
+          borderBottom: `1px solid ${scrolled ? 'rgba(244,240,228,0.14)' : 'transparent'}`,
+        }}
+      >
+        <div style={{
+          maxWidth: 1440, margin: '0 auto', padding: '0 24px',
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          height: scrolled ? 68 : 84, transition: 'height 0.35s ease',
+        }}>
+          <Link to="/" style={{ textDecoration: 'none' }} aria-label="Arbo Patagonia — inicio">
+            <div style={{ fontFamily: FONTS.serif, lineHeight: 1.05 }}>
+              <div style={{ color: COLORS.cream, fontSize: 21, fontWeight: 600, letterSpacing: '0.24em' }}>ARBO</div>
+              <div style={{ color: COLORS.accent, fontSize: 8.5, letterSpacing: '0.3em', textTransform: 'uppercase', marginTop: 3, opacity: 0.9 }}>
+                Wine &amp; Café
+              </div>
             </div>
           </Link>
 
-          <nav style={{ display: 'flex', gap: 36, alignItems: 'center' }} className="desktop-nav">
-            {links.map(l => (
-              <Link key={l.to} to={l.to}
-                style={{
-                  fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 500,
-                  letterSpacing: '0.14em', textTransform: 'uppercase',
-                  color: location.pathname === l.to ? C.gold : C.cream,
-                  textDecoration: 'none', transition: 'color 0.25s',
-                  borderBottom: location.pathname === l.to ? `1.5px solid ${C.gold}` : '1.5px solid transparent',
-                  paddingBottom: 2, opacity: location.pathname === l.to ? 1 : 0.85,
-                }}
-                onMouseEnter={e => { e.currentTarget.style.color = C.gold; e.currentTarget.style.opacity = '1' }}
-                onMouseLeave={e => { e.currentTarget.style.color = location.pathname === l.to ? C.gold : C.cream; e.currentTarget.style.opacity = location.pathname === l.to ? '1' : '0.85' }}
-              >{l.label}</Link>
-            ))}
-
-            <Link to="/contacto" style={{ textDecoration: 'none' }}>
-              <div style={{
-                fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600,
-                letterSpacing: '0.16em', textTransform: 'uppercase',
-                color: C.dark, background: C.gold,
-                padding: '10px 22px', transition: 'all 0.25s', cursor: 'pointer',
-              }}
-                onMouseEnter={e => e.currentTarget.style.background = '#cfc080'}
-                onMouseLeave={e => e.currentTarget.style.background = C.gold}
-              >
-                Reservar
-              </div>
-            </Link>
+          <nav aria-label="Navegación principal" className="arbo-desktop-nav" style={{ display: 'flex', gap: 30, alignItems: 'center' }}>
+            {SITE.nav.map(l => {
+              const active = location.pathname === l.to
+              return (
+                <Link key={l.to} to={l.to}
+                  style={{
+                    fontFamily: FONTS.sans, fontSize: 11, fontWeight: 500,
+                    letterSpacing: '0.12em', textTransform: 'uppercase',
+                    color: active ? COLORS.accent : COLORS.cream,
+                    textDecoration: 'none', paddingBottom: 3,
+                    borderBottom: active ? `1.5px solid ${COLORS.accent}` : '1.5px solid transparent',
+                    opacity: active ? 1 : 0.86, transition: 'opacity 0.2s, border-color 0.2s',
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.opacity = '1' }}
+                  onMouseLeave={e => { e.currentTarget.style.opacity = active ? '1' : '0.86' }}
+                >
+                  {l.label}
+                </Link>
+              )
+            })}
           </nav>
 
-          <button onClick={() => setOpen(v => !v)}
-            style={{ display: 'none', background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}
-            className="hamburger-btn" aria-label="Menú">
-            <div style={{ width: 24, height: 1.5, background: C.cream, marginBottom: 6, transition: 'all 0.3s', transform: open ? 'rotate(45deg) translateY(7.5px)' : 'none' }} />
-            <div style={{ width: 24, height: 1.5, background: C.cream, marginBottom: 6, opacity: open ? 0 : 1, transition: 'opacity 0.3s' }} />
-            <div style={{ width: 24, height: 1.5, background: C.cream, transition: 'all 0.3s', transform: open ? 'rotate(-45deg) translateY(-7.5px)' : 'none' }} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
+            <button onClick={() => setDrawerOpen(true)} aria-label="Ver carrito"
+              style={{ position: 'relative', background: 'none', border: 'none', color: COLORS.cream, cursor: 'pointer', padding: 6, display: 'flex' }}>
+              <CartIcon />
+              {itemCount > 0 && (
+                <span style={{
+                  position: 'absolute', top: -2, right: -2, background: COLORS.accent, color: COLORS.black,
+                  fontFamily: FONTS.sans, fontSize: 10, fontWeight: 700, borderRadius: '50%',
+                  width: 17, height: 17, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>{itemCount}</span>
+              )}
+            </button>
+
+            <span className="arbo-desktop-nav">
+              <Button to="/reservas" variant="solid-dark" size="sm">Reservar</Button>
+            </span>
+
+            <button onClick={() => setOpen(v => !v)} aria-label={open ? 'Cerrar menú' : 'Abrir menú'} aria-expanded={open}
+              className="arbo-hamburger" style={{ display: 'none', background: 'none', border: 'none', color: COLORS.cream, cursor: 'pointer', padding: 6 }}>
+              {open ? <CloseIcon /> : <MenuIcon />}
+            </button>
+          </div>
         </div>
       </header>
 
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, x: '100%' }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: '100%' }}
-            transition={{ type: 'tween', duration: 0.35, ease: 'easeInOut' }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
             style={{
-              position: 'fixed', inset: 0, zIndex: 998,
-              background: 'rgba(31,46,36,0.98)',
-              backdropFilter: 'blur(24px)',
-              display: 'flex', flexDirection: 'column',
-              alignItems: 'center', justifyContent: 'center',
-              gap: 40,
+              position: 'fixed', inset: 0, zIndex: 890, background: 'rgba(12,16,20,0.98)',
+              backdropFilter: 'blur(10px)', display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: 28, padding: 24,
             }}
           >
-            <div style={{ position: 'absolute', top: 28, left: 28 }}>
-              <div style={{ fontFamily: "'Cormorant Garamond', serif", color: C.cream, fontSize: 20, fontWeight: 600, letterSpacing: '0.22em' }}>MOULI</div>
-            </div>
+            <div style={{ position: 'absolute', top: 26, left: 24, fontFamily: FONTS.serif, color: COLORS.cream, fontSize: 20, letterSpacing: '0.22em' }}>ARBO</div>
 
-            {links.map((l, i) => (
+            {SITE.nav.map((l, i) => (
               <motion.div key={l.to}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.08 + i * 0.06 }}
+                initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.06 + i * 0.05 }}
               >
                 <Link to={l.to} style={{
-                  fontFamily: "'Cormorant Garamond', serif",
-                  fontSize: 'clamp(32px, 8vw, 44px)',
-                  fontWeight: 400,
-                  color: location.pathname === l.to ? C.gold : C.cream,
-                  textDecoration: 'none',
-                  letterSpacing: '0.04em',
-                  transition: 'color 0.2s',
-                  opacity: location.pathname === l.to ? 1 : 0.8,
-                }}>{l.label}</Link>
+                  fontFamily: FONTS.serif, fontSize: 'clamp(28px, 8vw, 40px)', fontWeight: 400,
+                  color: location.pathname === l.to ? COLORS.accent : COLORS.cream,
+                  textDecoration: 'none', letterSpacing: '0.02em',
+                }}>
+                  {l.label}
+                </Link>
               </motion.div>
             ))}
 
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-              style={{ marginTop: 16 }}>
-              <Link to="/contacto" style={{
-                fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 600,
-                letterSpacing: '0.2em', textTransform: 'uppercase',
-                color: C.dark, background: C.gold,
-                padding: '14px 36px', textDecoration: 'none', display: 'inline-block',
-              }}>
-                RESERVAR MESA
-              </Link>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.45 }} style={{ marginTop: 12 }}>
+              <Button to="/reservas" variant="solid-dark">Reservar</Button>
             </motion.div>
 
-            <div style={{ position: 'absolute', bottom: 40, display: 'flex', gap: 8, alignItems: 'center' }}>
-              <div style={{ width: 28, height: 1, background: 'rgba(243,239,231,0.25)' }} />
-              <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: '0.3em', color: 'rgba(243,239,231,0.4)', textTransform: 'uppercase' }}>Palermo · Buenos Aires</span>
-              <div style={{ width: 28, height: 1, background: 'rgba(243,239,231,0.25)' }} />
-            </div>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
+              style={{ position: 'absolute', bottom: 36, display: 'flex', gap: 20, alignItems: 'center' }}>
+              <a href={SITE.contact.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram de Arbo Patagonia"
+                style={{ color: COLORS.onDarkMuted }}>
+                <InstagramIcon />
+              </a>
+              <a href={`https://wa.me/${SITE.contact.whatsapp}`} target="_blank" rel="noopener noreferrer"
+                style={{ fontFamily: FONTS.sans, fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase', color: COLORS.onDarkMuted, textDecoration: 'none' }}>
+                WhatsApp
+              </a>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
 
       <style>{`
         @media (max-width: 900px) {
-          .desktop-nav { display: none !important; }
-          .hamburger-btn { display: block !important; }
+          .arbo-desktop-nav { display: none !important; }
+          .arbo-hamburger { display: flex !important; }
         }
       `}</style>
     </>

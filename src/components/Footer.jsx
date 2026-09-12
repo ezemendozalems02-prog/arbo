@@ -1,100 +1,96 @@
 import { Link } from 'react-router-dom'
-
-const C = {
-  dark:  '#1A2820',
-  deep:  '#314D39',
-  cream: '#F3EFE7',
-  gold:  '#B8A96A',
-  mid:   '#4C6B50',
-  muted: 'rgba(243,239,231,0.5)',
-}
-
-const IgIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-    <circle cx="17.5" cy="6.5" r="0.5" fill="currentColor"/>
-  </svg>
-)
-
-const LeafIcon = () => (
-  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: 0.5 }}>
-    <path d="M17 8C8 10 5.9 16.17 3.82 19.34L5.71 21c1-1.66 2.13-3.26 3.51-4.53 1.32-1.21 2.82-2.1 4.64-2.5-.74 1.64-1.9 3.03-3.38 4.03L12 20l4-6.5C17.84 11.84 18.5 10 17 8z"/>
-  </svg>
-)
+import { COLORS, FONTS } from '../styles/theme'
+import { SITE } from '../data/site'
+import { InstagramIcon, LeafIcon } from './ui/icons'
 
 export default function Footer() {
   return (
-    <footer style={{ background: C.dark, borderTop: '1px solid rgba(76,107,80,0.2)' }}>
-      <div style={{ maxWidth: 1320, margin: '0 auto', padding: '80px 28px 52px', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 52 }}>
-
+    <footer style={{ background: COLORS.black, borderTop: `1px solid ${COLORS.lineOnDark}` }}>
+      <div style={{
+        maxWidth: 1360, margin: '0 auto', padding: '84px 28px 56px',
+        display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 52,
+      }}>
         <div>
           <Link to="/" style={{ textDecoration: 'none' }}>
-            <div style={{ fontFamily: "'Cormorant Garamond', serif", color: C.cream, fontSize: 22, fontWeight: 600, letterSpacing: '0.22em', lineHeight: 1.2 }}>MOULI</div>
-            <div style={{ fontFamily: "'Inter', sans-serif", color: C.gold, fontSize: 9, letterSpacing: '0.28em', textTransform: 'uppercase', marginTop: 5, opacity: 0.8 }}>Café · Cocina · Encuentros</div>
+            <div style={{ fontFamily: FONTS.serif, color: COLORS.cream, fontSize: 22, fontWeight: 600, letterSpacing: '0.22em' }}>ARBO</div>
+            <div style={{ fontFamily: FONTS.sans, color: COLORS.accent, fontSize: 9, letterSpacing: '0.26em', textTransform: 'uppercase', marginTop: 6, opacity: 0.9 }}>
+              Wine &amp; Café
+            </div>
           </Link>
-          <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 18, color: C.gold, fontStyle: 'italic', marginTop: 24, lineHeight: 1.55 }}>
-            "Una pausa en la jungla<br />de Palermo."
+          <p style={{ fontFamily: FONTS.serif, fontSize: 17, color: COLORS.accent, fontStyle: 'italic', marginTop: 24, lineHeight: 1.55 }}>
+            "Entre café, vino<br />y montaña."
+          </p>
+          <p style={{ fontFamily: FONTS.sans, fontSize: 12, color: COLORS.onDarkMuted, marginTop: 16, letterSpacing: '0.04em' }}>
+            Trevelin · Patagonia Argentina
           </p>
           <div style={{ display: 'flex', gap: 16, marginTop: 22 }}>
-            <a href="https://instagram.com/mouli.palermo" target="_blank" rel="noopener noreferrer"
-              style={{ color: C.cream, opacity: 0.45, transition: 'opacity 0.2s' }}
+            <a href={SITE.contact.instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram de Arbo Patagonia"
+              style={{ color: COLORS.cream, opacity: 0.5, transition: 'opacity 0.2s' }}
               onMouseEnter={e => e.currentTarget.style.opacity = '1'}
-              onMouseLeave={e => e.currentTarget.style.opacity = '0.45'}>
-              <IgIcon />
+              onMouseLeave={e => e.currentTarget.style.opacity = '0.5'}>
+              <InstagramIcon />
             </a>
           </div>
         </div>
 
         <div>
-          <h4 style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: '0.3em', color: C.gold, textTransform: 'uppercase', marginBottom: 22 }}>Ubicación</h4>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.muted, lineHeight: 2.1 }}>
-            Thames 1786<br />Palermo, CABA<br />Buenos Aires, Argentina
+          <h4 style={{ fontFamily: FONTS.sans, fontSize: 10, letterSpacing: '0.3em', color: COLORS.accent, textTransform: 'uppercase', marginBottom: 22 }}>Navegación</h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {SITE.footerLinks.map(l => (
+              <Link key={l.to} to={l.to} style={{ fontFamily: FONTS.sans, fontSize: 14, color: COLORS.onDarkMuted, textDecoration: 'none', transition: 'color 0.2s' }}
+                onMouseEnter={e => e.currentTarget.style.color = COLORS.cream}
+                onMouseLeave={e => e.currentTarget.style.color = COLORS.onDarkMuted}>
+                {l.label}
+              </Link>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h4 style={{ fontFamily: FONTS.sans, fontSize: 10, letterSpacing: '0.3em', color: COLORS.accent, textTransform: 'uppercase', marginBottom: 22 }}>Ubicación</h4>
+          <p style={{ fontFamily: FONTS.sans, fontSize: 14, color: COLORS.onDarkMuted, lineHeight: 2.1 }}>
+            {SITE.location.addressLine}<br />{SITE.location.city}, {SITE.location.province}<br />{SITE.location.country}
           </p>
-          <a href="tel:+541144445678"
-            style={{ display: 'block', fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.muted, marginTop: 14, textDecoration: 'none', transition: 'color 0.2s' }}
-            onMouseEnter={e => e.currentTarget.style.color = C.gold}
-            onMouseLeave={e => e.currentTarget.style.color = C.muted}>
-            11 4444-5678
+          <h4 style={{ fontFamily: FONTS.sans, fontSize: 10, letterSpacing: '0.3em', color: COLORS.accent, textTransform: 'uppercase', margin: '22px 0 12px' }}>Horarios</h4>
+          {SITE.hours.map(h => (
+            <p key={h.days} style={{ fontFamily: FONTS.sans, fontSize: 13, color: COLORS.onDarkMuted, lineHeight: 1.9 }}>
+              {h.days}: <span style={{ color: COLORS.cream }}>{h.time}</span>
+            </p>
+          ))}
+        </div>
+
+        <div>
+          <h4 style={{ fontFamily: FONTS.sans, fontSize: 10, letterSpacing: '0.3em', color: COLORS.accent, textTransform: 'uppercase', marginBottom: 22 }}>Contacto</h4>
+          <a href={`tel:${SITE.contact.phoneDisplay.replace(/\s/g, '')}`}
+            style={{ display: 'block', fontFamily: FONTS.sans, fontSize: 14, color: COLORS.onDarkMuted, marginBottom: 14, textDecoration: 'none', transition: 'color 0.2s' }}
+            onMouseEnter={e => e.currentTarget.style.color = COLORS.accent}
+            onMouseLeave={e => e.currentTarget.style.color = COLORS.onDarkMuted}>
+            {SITE.contact.phoneDisplay}
           </a>
-        </div>
-
-        <div>
-          <h4 style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: '0.3em', color: C.gold, textTransform: 'uppercase', marginBottom: 22 }}>Horarios</h4>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.muted, lineHeight: 2.1 }}>
-            Martes a Domingo<br />
-            <span style={{ color: C.cream, fontWeight: 500 }}>09:00 — 00:00</span><br />
-            Lunes: cerrado
-          </p>
-        </div>
-
-        <div>
-          <h4 style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, letterSpacing: '0.3em', color: C.gold, textTransform: 'uppercase', marginBottom: 22 }}>Reservas</h4>
-          <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 14, color: C.muted, lineHeight: 1.85, marginBottom: 22 }}>
-            Escribinos por WhatsApp.<br />Te respondemos enseguida.
-          </p>
-          <a href="https://wa.me/541144445678" target="_blank" rel="noopener noreferrer"
+          <a href={`https://wa.me/${SITE.contact.whatsapp}`} target="_blank" rel="noopener noreferrer"
             style={{
-              fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 600,
-              letterSpacing: '0.16em', textTransform: 'uppercase',
-              color: C.dark, background: '#4C6B50',
-              padding: '12px 24px', textDecoration: 'none',
-              transition: 'background 0.25s', display: 'inline-block',
+              fontFamily: FONTS.sans, fontSize: 11, fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
+              color: COLORS.black, background: COLORS.accent, padding: '12px 24px', textDecoration: 'none',
+              transition: 'background 0.25s', display: 'inline-block', marginTop: 6,
             }}
-            onMouseEnter={e => e.currentTarget.style.background = '#5a7d5e'}
-            onMouseLeave={e => e.currentTarget.style.background = '#4C6B50'}>
+            onMouseEnter={e => e.currentTarget.style.background = '#a6c1ab'}
+            onMouseLeave={e => e.currentTarget.style.background = COLORS.accent}>
             WhatsApp
           </a>
         </div>
       </div>
 
-      <div style={{ borderTop: '1px solid rgba(76,107,80,0.15)', padding: '28px 24px', textAlign: 'center' }}>
-        <p style={{ fontFamily: "'EB Garamond', serif", fontSize: 16, color: C.gold, fontStyle: 'italic', letterSpacing: '0.08em', marginBottom: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
-          <LeafIcon /> La jungla escondida en Palermo. <LeafIcon />
+      <div style={{ borderTop: `1px solid ${COLORS.lineOnDark}`, padding: '26px 24px', textAlign: 'center' }}>
+        <p style={{ fontFamily: FONTS.serif, fontSize: 15, color: COLORS.accent, fontStyle: 'italic', letterSpacing: '0.04em', marginBottom: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
+          <LeafIcon width={13} height={13} /> Arbo no es solo donde tomás un café. <LeafIcon width={13} height={13} />
         </p>
-        <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: 'rgba(243,239,231,0.25)', letterSpacing: '0.06em' }}>
-          © {new Date().getFullYear()} MOULI — Palermo, Buenos Aires
-        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 20, flexWrap: 'wrap' }}>
+          <p style={{ fontFamily: FONTS.sans, fontSize: 11, color: COLORS.onDarkFaint, letterSpacing: '0.04em' }}>
+            © 2026 Arbo Patagonia
+          </p>
+          <Link to="/privacidad" style={{ fontFamily: FONTS.sans, fontSize: 11, color: COLORS.onDarkFaint, textDecoration: 'none' }}>Privacidad</Link>
+          <Link to="/terminos" style={{ fontFamily: FONTS.sans, fontSize: 11, color: COLORS.onDarkFaint, textDecoration: 'none' }}>Términos</Link>
+        </div>
       </div>
     </footer>
   )

@@ -1,15 +1,21 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
-import { useEffect } from 'react'
-import { SiteProvider } from './context/SiteContext'
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { AnimatePresence } from 'framer-motion'
+import { CartProvider, useCartContext } from './context/CartContext'
+import { usePrefersReducedMotion } from './hooks/useMediaQuery'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import CartDrawer from './components/CartDrawer'
+import WhatsAppButton from './components/WhatsAppButton'
+import LoadingScreen from './components/LoadingScreen'
 import Home from './pages/Home'
-import NuestraSelva from './pages/Nosotros'
-import Menu from './pages/Menu'
-import Galeria from './pages/Galeria'
-import Contacto from './pages/Contacto'
-import Admin from './pages/Admin'
-import TakeAway from './pages/TakeAway'
+import Carta from './pages/Carta'
+import Pedidos from './pages/Pedidos'
+import Reservas from './pages/Reservas'
+import Eventos from './pages/Eventos'
+import Franquicia from './pages/Franquicia'
+import ArboClub from './pages/ArboClub'
+import { Privacidad, Terminos } from './pages/Legal'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -17,40 +23,70 @@ function ScrollToTop() {
   return null
 }
 
-function PublicLayout() {
+function GlobalCartDrawer() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { setDrawerOpen, setCheckoutOpen } = useCartContext()
+
+  const handleCheckout = () => {
+    setDrawerOpen(false)
+    setCheckoutOpen(true)
+    if (location.pathname !== '/pedidos') navigate('/pedidos')
+  }
+
+  return <CartDrawer onCheckout={handleCheckout} />
+}
+
+function GlobalWhatsApp() {
+  const location = useLocation()
+  const { itemCount } = useCartContext()
+  const lifted = location.pathname === '/pedidos' && itemCount > 0
+  return <WhatsAppButton lifted={lifted} />
+}
+
+function AppShell() {
   return (
     <>
       <ScrollToTop />
       <Navbar />
       <main>
         <Routes>
-          <Route path="/"               element={<Home />} />
-          <Route path="/nuestra-selva"  element={<NuestraSelva />} />
-          <Route path="/nosotros"       element={<NuestraSelva />} />
-          <Route path="/menu"           element={<Menu />} />
-          <Route path="/galeria"        element={<Galeria />} />
-          <Route path="/contacto"       element={<Contacto />} />
-          <Route path="/takeaway"       element={<TakeAway />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/carta" element={<Carta />} />
+          <Route path="/pedidos" element={<Pedidos />} />
+          <Route path="/reservas" element={<Reservas />} />
+          <Route path="/eventos" element={<Eventos />} />
+          <Route path="/franquicia" element={<Franquicia />} />
+          <Route path="/arbo-club" element={<ArboClub />} />
+          <Route path="/privacidad" element={<Privacidad />} />
+          <Route path="/terminos" element={<Terminos />} />
+          <Route path="*" element={<Home />} />
         </Routes>
       </main>
       <Footer />
+      <GlobalCartDrawer />
+      <GlobalWhatsApp />
     </>
   )
 }
 
-function AppRoutes() {
-  const location = useLocation()
-  const isAdmin = location.pathname.startsWith('/admin')
-  if (isAdmin) return <Routes><Route path="/admin" element={<Admin />} /></Routes>
-  return <PublicLayout />
-}
-
 export default function App() {
+  const [loading, setLoading] = useState(true)
+  const reduced = usePrefersReducedMotion()
+
+  useEffect(() => {
+    const t = setTimeout(() => setLoading(false), reduced ? 0 : 1100)
+    return () => clearTimeout(t)
+  }, [reduced])
+
   return (
-    <SiteProvider>
+    <CartProvider>
+      <AnimatePresence>
+        {loading && <LoadingScreen key="loading" />}
+      </AnimatePresence>
       <BrowserRouter>
-        <AppRoutes />
+        <AppShell />
       </BrowserRouter>
-    </SiteProvider>
+    </CartProvider>
   )
 }
