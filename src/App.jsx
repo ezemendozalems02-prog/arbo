@@ -16,6 +16,7 @@ import Eventos from './pages/Eventos'
 import Franquicia from './pages/Franquicia'
 import ArboClub from './pages/ArboClub'
 import { Privacidad, Terminos } from './pages/Legal'
+import AdminApp from './admin/AdminApp'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -44,7 +45,7 @@ function GlobalWhatsApp() {
   return <WhatsAppButton lifted={lifted} />
 }
 
-function AppShell() {
+function PublicShell() {
   return (
     <>
       <ScrollToTop />
@@ -85,7 +86,12 @@ export default function App() {
         {loading && <LoadingScreen key="loading" />}
       </AnimatePresence>
       <BrowserRouter>
-        <AppShell />
+        <Routes>
+          {/* ARBO OS (admin) tiene su propio layout — nunca comparte
+              Navbar/Footer/carrito del sitio público. */}
+          <Route path="/admin/*" element={<AdminApp />} />
+          <Route path="/*" element={<PublicShell />} />
+        </Routes>
       </BrowserRouter>
     </CartProvider>
   )
