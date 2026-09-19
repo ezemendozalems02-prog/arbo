@@ -22,7 +22,8 @@ function initialState() {
     orders: {},
     sales: [],
     tickets: {},
-    cash: { status: 'cerrada', openedAt: null, closedAt: null, initialAmount: 0, movements: [], lastClosing: null },
+    cashSessions: [],
+    cash: { sessionId: null, status: 'cerrada', openedAt: null, closedAt: null, initialAmount: 0, movements: [], lastClosing: null },
     customerAdjustments: {},
     saleSeq: 1,
     orderSeq: 1,
@@ -63,18 +64,49 @@ export function POSProvider({ children }) {
     try { localStorage.setItem(KEY, JSON.stringify(state)) } catch { /* storage unavailable */ }
   }, [state])
 
-  // ---------- Caja ----------
+  // ---------- Caja con Historial Preservado (Append-Only) ----------
   const openCashRegister = useCallback((initialAmount) => {
-    setState(s => ({
-      ...s,
-      cash: { ...s.cash, status: 'abierta', openedAt: new Date(), closedAt: null, initialAmount, movements: [] },
-    }))
+    setState(s => {
+      const sessionId = uid('sess')
+      const now = new Date()
+      const openingMov = {
+        id: uid('mov'),
+        sessionId,
+        type: 'ingreso',
+        amount: Number(initialAmount) || 0,
+        concept: 'Apertura de turno de caja',
+        createdAt: now,
+      }
+      const newSession = {
+        id: sessionId,
+        status: 'abierta',
+        openedAt: now,
+        closedAt: null,
+        initialAmount: Number(initialAmount) || 0,
+        lastClosing: null,
+      }
+
+      return {
+        ...s,
+        cashSessions: [...(s.cashSessions || []), newSession],
+        cash: {
+          ...s.cash,
+          sessionId,
+          status: 'abierta',
+          openedAt: now,
+          closedAt: null,
+          initialAmount: Number(initialAmount) || 0,
+          // Historial acumulado preservado; se añade el movimiento de apertura
+          movements: [...(s.cash?.movements || []), openingMov],
+        },
+      }
+    })
   }, [])
 
   const registerCashMovement = useCallback(({ type, amount, concept }) => {
     setState(s => ({
       ...s,
-      cash: { ...s.cash, movements: [...s.cash.movements, { id: uid('mov'), type, amount, concept, createdAt: new Date() }] },
+      cash: { ...s.cash, movements: [...s.cash.movements, { id: uid('mov'), sessionId: s.cash.sessionId, type, amount, concept, createdAt: new Date() }] },
     }))
   }, [])
 
@@ -82,13 +114,21 @@ export function POSProvider({ children }) {
     setState(s => {
       const summary = calcCashSummary(s.cash)
       const diff = calcCashDifference(summary.expectedCash, declaredCash)
+      const now = new Date()
+      const closingInfo = { expectedCash: summary.expectedCash, declaredCash, diff, closedAt: now }
+
+      const updatedSessions = (s.cashSessions || []).map(sess =>
+        sess.id === s.cash?.sessionId ? { ...sess, status: 'cerrada', closedAt: now, lastClosing: closingInfo } : sess
+      )
+
       return {
         ...s,
+        cashSessions: updatedSessions,
         cash: {
           ...s.cash,
           status: 'cerrada',
-          closedAt: new Date(),
-          lastClosing: { expectedCash: summary.expectedCash, declaredCash, diff, closedAt: new Date() },
+          closedAt: now,
+          lastClosing: closingInfo,
         },
       }
     })
@@ -261,7 +301,7 @@ export function POSProvider({ children }) {
   const takeTicket = useCallback((ticketId) => {
     setState(s => {
       const t = s.tickets[ticketId]
-      if (!t || t.status !== 'SENT') return s
+      if (!t || (t.status !== 'SENT' && t.status !== 'NEW')) return s
       return { ...s, tickets: { ...s.tickets, [ticketId]: { ...t, status: 'PREPARING', startedAt: new Date(), startedBy: CURRENT_STAFF_NAME } } }
     })
   }, [])
@@ -278,14 +318,14 @@ export function POSProvider({ children }) {
     setState(s => {
       const t = s.tickets[ticketId]
       if (!t || t.status !== 'READY') return s
-      return { ...s, tickets: { ...s.tickets, [ticketId]: { ...t, status: 'DELIVERED', deliveredAt: new Date() } } }
+      return { ...s, tickets: { ...s.tickets, [ticketId]: { ...t, status: 'ARCHIVED', deliveredAt: new Date(), archivedAt: new Date() } } }
     })
   }, [])
 
   const cancelTicket = useCallback((ticketId, reason) => {
     setState(s => {
       const t = s.tickets[ticketId]
-      if (!t || t.status === 'DELIVERED' || t.status === 'CANCELLED') return s
+      if (!t || t.status === 'DELIVERED' || t.status === 'ARCHIVED' || t.status === 'CANCELLED') return s
       return { ...s, tickets: { ...s.tickets, [ticketId]: { ...t, status: 'CANCELLED', cancelledAt: new Date(), cancelledBy: CURRENT_STAFF_NAME, cancelReason: reason || 'Sin motivo especificado' } } }
     })
   }, [])
@@ -328,11 +368,33 @@ export function POSProvider({ children }) {
         ? [...s.cash.movements, { id: uid('mov'), type: 'venta', amount: total, method: paymentMethod, concept: `Venta ${sale.tableNumber ? `Mesa ${sale.tableNumber}` : 'Mostrador'}`, createdAt: new Date() }]
         : s.cash.movements
 
+      let updatedTickets = { ...s.tickets }
+      if (!order.ticketIds || order.ticketIds.length === 0) {
+        const ticketId = uid('tkt')
+        const tkt = {
+          id: ticketId,
+          code: String.fromCharCode(65 + ((s.saleSeq - 1) % 26)),
+          orderId: sale.id,
+          tableName: sale.tableNumber ? `Mesa ${sale.tableNumber}` : 'Mostrador',
+          station: 'cocina',
+          items: sale.items.map(it => ({ id: it.id, name: it.name, quantity: it.quantity, modifiers: it.modifiers })),
+          status: 'NEW',
+          createdAt: new Date(),
+          sentAt: new Date(),
+          startedAt: null,
+          readyAt: null,
+          deliveredAt: null,
+          archivedAt: null,
+        }
+        updatedTickets[ticketId] = tkt
+      }
+
       return {
         ...s,
         orders: remainingOrders,
         sales: [...s.sales, sale],
         saleSeq: s.saleSeq + 1,
+        tickets: updatedTickets,
         cash: { ...s.cash, movements },
         tables: order.tableId
           ? s.tables.map(t => t.id === order.tableId ? { ...t, status: 'libre', orderId: null } : t)
@@ -362,6 +424,7 @@ export function POSProvider({ children }) {
     sales: state.sales,
     tickets: ticketList,
     cash: state.cash,
+    cashSessions: state.cashSessions || [],
     counterOrderId,
     paymentMethods: PAYMENT_METHODS,
     openCashRegister, registerCashMovement, closeCashRegister,

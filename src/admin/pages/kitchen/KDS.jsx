@@ -8,14 +8,16 @@ import TicketCard from '../../components/kitchen/TicketCard'
 import CancelTicketModal from '../../components/kitchen/CancelTicketModal'
 
 const COLUMNS = [
-  { status: 'SENT', title: 'Nuevos' },
+  { status: 'NEW', altStatus: 'SENT', title: 'Nuevos' },
   { status: 'PREPARING', title: 'En preparación' },
   { status: 'READY', title: 'Listos' },
 ]
 
 const isToday = (d) => {
+  if (!d) return false
+  const dateObj = d instanceof Date ? d : new Date(d)
   const n = new Date()
-  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate()
+  return dateObj.getFullYear() === n.getFullYear() && dateObj.getMonth() === n.getMonth() && dateObj.getDate() === n.getDate()
 }
 
 // KDS — Kitchen Display System (bloque 7/8). A propósito NO reutiliza el
@@ -33,9 +35,9 @@ export default function KDS() {
   const metrics = calcKitchenMetrics(todayTickets)
 
   const handleAdvance = (ticket) => {
-    if (ticket.status === 'SENT') { takeTicket(ticket.id); return }
+    if (ticket.status === 'SENT' || ticket.status === 'NEW') { takeTicket(ticket.id); return }
     if (ticket.status === 'PREPARING') { readyTicket(ticket.id); showToast(`Comanda #${ticket.code} lista`); return }
-    if (ticket.status === 'READY') { deliverTicket(ticket.id); showToast(`Comanda #${ticket.code} entregada`) }
+    if (ticket.status === 'READY') { deliverTicket(ticket.id); showToast(`Comanda #${ticket.code} archivada`) }
   }
 
   const handleCancel = (reason) => {
@@ -79,8 +81,8 @@ export default function KDS() {
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 18 }}>
         {COLUMNS.map(col => {
           const colTickets = stationTickets
-            .filter(t => t.status === col.status)
-            .sort((a, b) => a.sentAt - b.sentAt)
+            .filter(t => t.status === col.status || (col.altStatus && t.status === col.altStatus))
+            .sort((a, b) => new Date(a.sentAt || a.createdAt) - new Date(b.sentAt || b.createdAt))
           return (
             <div key={col.status}>
               <p style={{ fontFamily: FONTS.sans, fontSize: 12, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: COLORS.onDarkMuted, marginBottom: 12 }}>

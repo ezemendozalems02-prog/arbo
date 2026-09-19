@@ -1,9 +1,12 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, Navigate } from 'react-router-dom'
 import { POSProvider } from '../context/POSContext'
 import { InventoryProvider } from '../context/InventoryContext'
 import { CRMProvider } from '../context/CRMContext'
+import { OfflineProvider } from '../context/OfflineContext'
 import { ToastProvider } from './context/ToastContext'
 import AdminLayout from './layout/AdminLayout'
+import ProtectedRoute from './components/ProtectedRoute'
+import Login from './pages/auth/Login'
 import { ADMIN_ROUTES } from './nav.config'
 import Dashboard from './pages/Dashboard'
 import ComingSoon from './pages/ComingSoon'
@@ -12,6 +15,7 @@ import Mesas from './pages/pos/Mesas'
 import Caja from './pages/pos/Caja'
 import Ventas from './pages/pos/Ventas'
 import VentaDetail from './pages/pos/VentaDetail'
+import FiscalDashboard from './pages/fiscal/FiscalDashboard'
 import KDS from './pages/kitchen/KDS'
 import Comandas from './pages/kitchen/Comandas'
 import InventoryDashboard from './pages/inventory/InventoryDashboard'
@@ -26,6 +30,8 @@ import SupplierDetail from './pages/inventory/SupplierDetail'
 import Waste from './pages/inventory/Waste'
 import Movements from './pages/inventory/Movements'
 import Costs from './pages/inventory/Costs'
+import Warehouses from './pages/inventory/Warehouses'
+import StockTransfers from './pages/inventory/StockTransfers'
 import CustomersDashboard from './pages/crm/CustomersDashboard'
 import CustomerDetail from './pages/crm/CustomerDetail'
 import Segments from './pages/crm/Segments'
@@ -43,27 +49,30 @@ import CustomerAnalytics from './pages/analytics/CustomerAnalytics'
 import Retention from './pages/analytics/Retention'
 import Cohorts from './pages/analytics/Cohorts'
 import RFM from './pages/analytics/RFM'
+import SalesReports from './pages/reports/SalesReports'
+import ProductsReports from './pages/reports/ProductsReports'
+import CustomersReports from './pages/reports/CustomersReports'
+import PurchaseSuggestions from './pages/inventory/PurchaseSuggestions'
 
-// Este componente cuelga de <Route path="/admin/*"> en App.jsx, así que
-// React Router recorta ese prefijo antes de matchear acá adentro: las rutas
-// hijas se declaran relativas a "/admin" (nav.config.js sigue usando paths
-// absolutos para el sidebar y los <Link>, que no se ven afectados).
 function toRelativePath(path) {
   const rel = path.replace(/^\/admin/, '')
   return rel === '' ? '/' : rel
 }
 
-// Un módulo entra acá con su componente real y pasa a `available: true` en
-// nav.config.js. Lo que no tiene entrada cae al fallback "Próximamente".
 const PAGES = {
   '/admin': Dashboard,
   '/admin/pos': POS,
   '/admin/mesas': Mesas,
   '/admin/caja': Caja,
   '/admin/ventas': Ventas,
+  '/admin/fiscal': FiscalDashboard,
   '/admin/cocina': KDS,
   '/admin/comandas': Comandas,
   '/admin/inventario': InventoryDashboard,
+  '/admin/depositos': Warehouses,
+  '/admin/warehouses': Warehouses,
+  '/admin/transferencias': StockTransfers,
+  '/admin/transfers': StockTransfers,
   '/admin/recetas': Recipes,
   '/admin/compras': Purchases,
   '/admin/proveedores': Suppliers,
@@ -85,10 +94,12 @@ const PAGES = {
   '/admin/analisis/retencion': Retention,
   '/admin/analisis/cohortes': Cohorts,
   '/admin/analisis/rfm': RFM,
+  '/admin/reportes/ventas': SalesReports,
+  '/admin/reportes/productos': ProductsReports,
+  '/admin/reportes/clientes': CustomersReports,
+  '/admin/compras-sugeridas': PurchaseSuggestions,
 }
 
-// Rutas de detalle (no viven en nav.config.js porque no tienen su propia
-// entrada de sidebar) — mismo patrón que /admin/ventas/:saleId en Fase 2.
 const DETAIL_ROUTES = [
   { path: '/admin/ventas/:saleId', element: <VentaDetail /> },
   { path: '/admin/inventario/fisico', element: <PhysicalInventory /> },
@@ -102,30 +113,47 @@ const DETAIL_ROUTES = [
 
 export default function AdminApp() {
   return (
-    <ToastProvider>
-      <POSProvider>
-        <InventoryProvider>
-          <CRMProvider>
-            <AdminLayout>
+    <OfflineProvider>
+      <ToastProvider>
+        <POSProvider>
+          <InventoryProvider>
+            <CRMProvider>
               <Routes>
-                {ADMIN_ROUTES.map(route => {
-                  const Page = PAGES[route.path]
-                  return (
-                    <Route
-                      key={route.path}
-                      path={toRelativePath(route.path)}
-                      element={Page ? <Page /> : <ComingSoon title={route.label} />}
-                    />
-                  )
-                })}
-                {DETAIL_ROUTES.map(({ path, element }) => (
-                  <Route key={path} path={toRelativePath(path)} element={element} />
-                ))}
+                {/* Ruta pública de login para administradores y empleados */}
+                <Route path="login" element={<Login />} />
+
+                {/* Todas las rutas de administración están estrictamente protegidas */}
+                <Route
+                  path="/*"
+                  element={
+                    <ProtectedRoute>
+                      <AdminLayout>
+                        <Routes>
+                          {ADMIN_ROUTES.map(route => {
+                            const Page = PAGES[route.path]
+                            return (
+                              <Route
+                                key={route.path}
+                                path={toRelativePath(route.path)}
+                                element={Page ? <Page /> : <ComingSoon title={route.label} />}
+                              />
+                            )
+                          })}
+                          {DETAIL_ROUTES.map(({ path, element }) => (
+                            <Route key={path} path={toRelativePath(path)} element={element} />
+                          ))}
+                          {/* Fallback interno */}
+                          <Route path="*" element={<Navigate to="/admin" replace />} />
+                        </Routes>
+                      </AdminLayout>
+                    </ProtectedRoute>
+                  }
+                />
               </Routes>
-            </AdminLayout>
-          </CRMProvider>
-        </InventoryProvider>
-      </POSProvider>
-    </ToastProvider>
+            </CRMProvider>
+          </InventoryProvider>
+        </POSProvider>
+      </ToastProvider>
+    </OfflineProvider>
   )
 }

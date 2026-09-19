@@ -5,6 +5,7 @@ import { useIsMobile } from '../../hooks/useMediaQuery'
 import { ADMIN_ROUTES } from '../nav.config'
 import { MenuIcon, CloseIcon } from '../../components/ui/icons'
 import AdminSidebar from './AdminSidebar'
+import ConnectivityBanner from '../components/ConnectivityBanner'
 
 const SIDEBAR_WIDTH = 260
 
@@ -70,9 +71,12 @@ export default function AdminLayout({ children }) {
             )}
             <h1 style={{ fontFamily: FONTS.serif, fontSize: 24, color: COLORS.greenDark, fontWeight: 500 }}>{title}</h1>
           </div>
-          <Link to="/" style={{ fontFamily: FONTS.sans, fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: COLORS.green, textDecoration: 'none' }}>
-            ← Ver sitio
-          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <ConnectivityBanner />
+            <Link to="/" style={{ fontFamily: FONTS.sans, fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: COLORS.green, textDecoration: 'none' }}>
+              ← Ver sitio
+            </Link>
+          </div>
         </header>
 
         <main style={{ flex: 1, padding: isKDS ? 0 : (isMobile ? '20px 16px 60px' : '28px 32px 70px') }}>

@@ -15,8 +15,10 @@ import Reservas from './pages/Reservas'
 import Eventos from './pages/Eventos'
 import Franquicia from './pages/Franquicia'
 import ArboClub from './pages/ArboClub'
+import OrderTracking from './pages/OrderTracking'
 import { Privacidad, Terminos } from './pages/Legal'
 import AdminApp from './admin/AdminApp'
+import { AuthProvider } from './context/AuthContext'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -55,6 +57,9 @@ function PublicShell() {
           <Route path="/" element={<Home />} />
           <Route path="/carta" element={<Carta />} />
           <Route path="/pedidos" element={<Pedidos />} />
+          <Route path="/store/:slug" element={<Pedidos />} />
+          <Route path="/order/:token" element={<OrderTracking />} />
+          <Route path="/pedidos/tracking/:token" element={<OrderTracking />} />
           <Route path="/reservas" element={<Reservas />} />
           <Route path="/eventos" element={<Eventos />} />
           <Route path="/franquicia" element={<Franquicia />} />
@@ -81,18 +86,20 @@ export default function App() {
   }, [reduced])
 
   return (
-    <CartProvider>
-      <AnimatePresence>
-        {loading && <LoadingScreen key="loading" />}
-      </AnimatePresence>
-      <BrowserRouter>
-        <Routes>
-          {/* ARBO OS (admin) tiene su propio layout — nunca comparte
-              Navbar/Footer/carrito del sitio público. */}
-          <Route path="/admin/*" element={<AdminApp />} />
-          <Route path="/*" element={<PublicShell />} />
-        </Routes>
-      </BrowserRouter>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        <AnimatePresence>
+          {loading && <LoadingScreen key="loading" />}
+        </AnimatePresence>
+        <BrowserRouter>
+          <Routes>
+            {/* ARBO OS (admin) tiene su propio layout y autenticación estricta — nunca comparte
+                Navbar/Footer/carrito del sitio público. */}
+            <Route path="/admin/*" element={<AdminApp />} />
+            <Route path="/*" element={<PublicShell />} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
+    </AuthProvider>
   )
 }

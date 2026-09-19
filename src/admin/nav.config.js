@@ -22,6 +22,7 @@ export const ADMIN_NAV = [
     group: 'Ventas',
     items: [
       { path: '/admin/ventas', label: 'Ventas', available: true },
+      { path: '/admin/fiscal', label: 'Fiscal & AFIP', available: true },
       { path: '/admin/pedidos', label: 'Pedidos', available: false },
       { path: '/admin/reservas', label: 'Reservas', available: false },
     ],
@@ -30,8 +31,11 @@ export const ADMIN_NAV = [
     group: 'Inventario',
     items: [
       { path: '/admin/inventario', label: 'Inventario', available: true },
+      { path: '/admin/depositos', label: 'Depósitos', available: true },
+      { path: '/admin/transferencias', label: 'Transferencias', available: true },
       { path: '/admin/recetas', label: 'Recetas', available: true },
       { path: '/admin/compras', label: 'Compras', available: true },
+      { path: '/admin/compras-sugeridas', label: 'Compras Sugeridas', available: true },
       { path: '/admin/proveedores', label: 'Proveedores', available: true },
       { path: '/admin/mermas', label: 'Mermas', available: true },
       { path: '/admin/movimientos', label: 'Movimientos', available: true },
@@ -84,9 +88,9 @@ export const ADMIN_NAV = [
   {
     group: 'Reportes',
     items: [
-      { path: '/admin/reportes/ventas', label: 'Ventas', available: false },
-      { path: '/admin/reportes/productos', label: 'Productos', available: false },
-      { path: '/admin/reportes/clientes', label: 'Clientes', available: false },
+      { path: '/admin/reportes/ventas', label: 'Ventas', available: true },
+      { path: '/admin/reportes/productos', label: 'Productos', available: true },
+      { path: '/admin/reportes/clientes', label: 'Clientes', available: true },
     ],
   },
   {

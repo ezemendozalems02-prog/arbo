@@ -1,0 +1,37 @@
+{
+  "name": "ARBO OS — Operación Gastronómica",
+  "short_name": "ARBO OS",
+  "description": "Sistema operativo integral para restaurantes, cafés de especialidad y wine bars en la Patagonia.",
+  "start_url": "/admin",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1F402F",
+  "theme_color": "#1F402F",
+  "categories": ["business", "food", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Punto de Venta (POS)",
+      "url": "/admin/pos",
+      "description": "Acceso directo al mostrador y toma de comandas"
+    },
+    {
+      "name": "Cocina (KDS)",
+      "url": "/admin/cocina",
+      "description": "Pantalla de comandas en cocina"
+    },
+    {
+      "name": "Caja",
+      "url": "/admin/caja",
+      "description": "Control de caja y turnos"
+    }
+  ]
+}
