@@ -116,7 +116,7 @@ VALUES (
 -- Insumo Base: Café Grano (Costo: $15.000/kg)
 INSERT INTO public.ingredients (id, organization_id, name, base_unit, current_cost_unit, min_stock_alert)
 VALUES (
-    'i0000000-0000-0000-0000-000000000001',
+    'd0000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'Café Grano Especialidad',
     'kg',
@@ -127,7 +127,7 @@ VALUES (
 -- Producto Final: Espresso Doble ($3.500 ARS)
 INSERT INTO public.products (id, organization_id, category_id, name, description, base_price, is_active)
 VALUES (
-    'p0000000-0000-0000-0000-000000000001',
+    'e0000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     'c0000000-0000-0000-0000-000000000001',
     'Espresso Doble',
@@ -139,9 +139,9 @@ VALUES (
 -- Ficha Técnica / Receta: Espresso Doble
 INSERT INTO public.recipes (id, organization_id, product_id, yield_portions, waste_percentage)
 VALUES (
-    'r0000000-0000-0000-0000-000000000001',
+    'fa000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
-    'p0000000-0000-0000-0000-000000000001',
+    'e0000000-0000-0000-0000-000000000001',
     1.00,
     0.00
 ) ON CONFLICT (id) DO NOTHING;
@@ -149,9 +149,9 @@ VALUES (
 -- Ítem de Receta: 18g de Café Grano
 INSERT INTO public.recipe_items (id, recipe_id, ingredient_id, quantity, unit)
 VALUES (
-    'ri000000-0000-0000-0000-000000000001',
-    'r0000000-0000-0000-0000-000000000001',
-    'i0000000-0000-0000-0000-000000000001',
+    'fb000000-0000-0000-0000-000000000001',
+    'fa000000-0000-0000-0000-000000000001',
+    'd0000000-0000-0000-0000-000000000001',
     18.0000,
     'g'
 ) ON CONFLICT (id) DO NOTHING;
@@ -159,13 +159,14 @@ VALUES (
 -- 6. STOCK INICIAL: 5.000 kg de Café Grano en Palermo Soho
 INSERT INTO public.inventory_movements (id, organization_id, branch_id, ingredient_id, movement_type, quantity_delta, unit_cost_snapshot, reason)
 VALUES (
-    'm0000000-0000-0000-0000-000000000001',
+    'fc000000-0000-0000-0000-000000000001',
     '11111111-1111-1111-1111-111111111111',
     '11111111-1111-1111-1111-000000000001',
-    'i0000000-0000-0000-0000-000000000001',
+    'd0000000-0000-0000-0000-000000000001',
     'INITIAL_STOCK',
     5.0000,
     15000.0000,
     'Stock inicial de apertura de sucursal'
 ) ON CONFLICT (id) DO NOTHING;
+
 
