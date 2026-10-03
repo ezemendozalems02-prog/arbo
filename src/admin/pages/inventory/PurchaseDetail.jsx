@@ -7,7 +7,7 @@ import { PURCHASE_STATUS_LABELS } from '../../../mock/purchases'
 import { UNIT_LABELS } from '../../../mock/units'
 import { formatMoney, formatDate } from '../../utils/format'
 import Panel from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 const Row = ({ label, value }) => (
   <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', fontFamily: FONTS.sans, fontSize: 13, color: COLORS.onLightMuted }}>

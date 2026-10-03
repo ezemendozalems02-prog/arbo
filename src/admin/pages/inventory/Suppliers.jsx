@@ -5,7 +5,7 @@ import { useInventory } from '../../../context/InventoryContext'
 import { useToast } from '../../context/ToastContext'
 import { INVENTORY_CATEGORY_LABELS } from '../../../mock/inventoryCategories'
 import { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import NewSupplierModal from '../../components/inventory/NewSupplierModal'
 
 const inputStyle = {

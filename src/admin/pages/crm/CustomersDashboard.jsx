@@ -10,7 +10,7 @@ import { formatMoney, formatNumber, formatDate } from '../../utils/format'
 import StatCard from '../../components/StatCard'
 import PeriodFilter from '../../components/PeriodFilter'
 import { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import NewCustomerModal from '../../components/crm/NewCustomerModal'
 
 const inputStyle = {

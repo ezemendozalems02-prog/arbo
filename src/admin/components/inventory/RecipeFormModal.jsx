@@ -7,7 +7,7 @@ import { UNITS_OF_MEASURE, UNIT_LABELS } from '../../../mock/units'
 import { calcRecipeCost, calcFoodCostPct } from '../../../services/recipeCostService'
 import { formatMoney } from '../../utils/format'
 import AdminModal from '../AdminModal'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 const inputStyle = {
   width: '100%', padding: '11px 12px', background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}`,

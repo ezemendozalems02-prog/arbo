@@ -6,7 +6,7 @@ import { useToast } from '../../context/ToastContext'
 import { POINT_TXN_TYPES, POINT_TXN_LABELS } from '../../../mock/loyaltyTransactions'
 import { formatDate, formatTime } from '../../utils/format'
 import { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import AdjustPointsModal from '../../components/crm/AdjustPointsModal'
 
 const inputStyle = {

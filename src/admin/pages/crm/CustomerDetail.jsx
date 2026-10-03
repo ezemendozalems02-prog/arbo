@@ -15,7 +15,7 @@ import { renderMessage } from '../../../services/campaignTemplateService'
 import { formatMoney, formatNumber, formatDate, formatTime } from '../../utils/format'
 import Panel, { EmptyState } from '../../components/Panel'
 import Tabs from '../../components/Tabs'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import RedeemRewardModal from '../../components/crm/RedeemRewardModal'
 import AdjustPointsModal from '../../components/crm/AdjustPointsModal'
 

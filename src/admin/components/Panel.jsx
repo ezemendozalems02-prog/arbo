@@ -1,21 +1,16 @@
-import { COLORS, FONTS } from '../../styles/theme'
+import { SectionCard } from '../ui/Card'
+import ArboEmptyState from '../ui/EmptyState'
 
-export default function Panel({ title, action, children }) {
+// API histórica de los módulos (title/action/children) sobre el SectionCard
+// del design system: todos los paneles existentes heredan el estilo nuevo.
+export default function Panel({ title, description, action, icon, children }) {
   return (
-    <div style={{ background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}`, padding: '20px 22px', height: '100%', boxSizing: 'border-box' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <h2 style={{ fontFamily: FONTS.serif, fontSize: 18, color: COLORS.greenDark, fontWeight: 500 }}>{title}</h2>
-        {action}
-      </div>
+    <SectionCard title={title} description={description} action={action} icon={icon}>
       {children}
-    </div>
+    </SectionCard>
   )
 }
 
-export function EmptyState({ label }) {
-  return (
-    <p style={{ fontFamily: FONTS.sans, fontSize: 13, color: COLORS.onLightFaint, padding: '24px 0', textAlign: 'center' }}>
-      {label}
-    </p>
-  )
+export function EmptyState({ label, description, action }) {
+  return <ArboEmptyState compact title={label} description={description} action={action} />
 }

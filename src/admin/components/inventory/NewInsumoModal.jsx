@@ -3,7 +3,7 @@ import { COLORS, FONTS } from '../../../styles/theme'
 import { INVENTORY_CATEGORIES } from '../../../mock/inventoryCategories'
 import { UNITS_OF_MEASURE, UNIT_LABELS } from '../../../mock/units'
 import AdminModal from '../AdminModal'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 const inputStyle = {
   width: '100%', padding: '12px 14px', background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}`,

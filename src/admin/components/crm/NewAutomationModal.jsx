@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { COLORS, FONTS } from '../../../styles/theme'
 import { AUTOMATION_TRIGGERS, AUTOMATION_TRIGGER_LABELS, AUTOMATION_ACTIONS, AUTOMATION_ACTION_LABELS } from '../../../mock/automations'
 import AdminModal from '../AdminModal'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 const inputStyle = {
   width: '100%', padding: '12px 14px', background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}`,

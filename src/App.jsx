@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom'
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { CartProvider, useCartContext } from './context/CartContext'
 import { usePrefersReducedMotion } from './hooks/useMediaQuery'
@@ -17,8 +17,11 @@ import Franquicia from './pages/Franquicia'
 import ArboClub from './pages/ArboClub'
 import OrderTracking from './pages/OrderTracking'
 import { Privacidad, Terminos } from './pages/Legal'
-import AdminApp from './admin/AdminApp'
 import { AuthProvider } from './context/AuthContext'
+
+// ARBO OS se descarga aparte: quien visita el sitio público no carga el admin.
+const AdminApp = lazy(() => import('./admin/AdminApp'))
+const isAdminPath = () => typeof window !== 'undefined' && window.location.pathname.startsWith('/admin')
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -77,7 +80,9 @@ function PublicShell() {
 }
 
 export default function App() {
-  const [loading, setLoading] = useState(true)
+  // La intro de marca es para el sitio público; en ARBO OS, que se usa todo
+  // el día, sería una espera innecesaria en cada recarga.
+  const [loading, setLoading] = useState(() => !isAdminPath())
   const reduced = usePrefersReducedMotion()
 
   useEffect(() => {
@@ -95,7 +100,11 @@ export default function App() {
           <Routes>
             {/* ARBO OS (admin) tiene su propio layout y autenticación estricta — nunca comparte
                 Navbar/Footer/carrito del sitio público. */}
-            <Route path="/admin/*" element={<AdminApp />} />
+            <Route path="/admin/*" element={
+              <Suspense fallback={<div style={{ minHeight: '100vh', background: '#F7F4EE' }} />}>
+                <AdminApp />
+              </Suspense>
+            } />
             <Route path="/*" element={<PublicShell />} />
           </Routes>
         </BrowserRouter>

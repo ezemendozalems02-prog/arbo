@@ -3,7 +3,7 @@ import { COLORS, FONTS } from '../../../styles/theme'
 import { CAMPAIGN_CHANNELS, CAMPAIGN_CHANNEL_LABELS } from '../../../mock/campaigns'
 import { TEMPLATE_VARIABLES } from '../../../services/campaignTemplateService'
 import AdminModal from '../AdminModal'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 const inputStyle = {
   width: '100%', padding: '12px 14px', background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}`,

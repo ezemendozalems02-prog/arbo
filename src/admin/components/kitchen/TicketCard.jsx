@@ -1,6 +1,6 @@
 import { COLORS, FONTS } from '../../../styles/theme'
 import ElapsedTimer from './ElapsedTimer'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 const ACTION_LABEL = { SENT: 'Tomar', PREPARING: 'Listo', READY: 'Entregar' }
 

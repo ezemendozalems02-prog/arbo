@@ -5,7 +5,7 @@ import { TAX_RATE } from '../../../mock/purchases'
 import { resolvePurchaseLine } from '../../../services/purchaseService'
 import { formatMoney } from '../../utils/format'
 import AdminModal from '../AdminModal'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 const inputStyle = {
   width: '100%', padding: '11px 12px', background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}`,

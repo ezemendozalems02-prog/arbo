@@ -7,7 +7,7 @@ import { calcLineTotal } from '../../../services/salesCalculations'
 import { calculateOrderConsumption, calculateOrderCost } from '../../../services/inventoryConsumptionService'
 import { UNIT_SHORT } from '../../../mock/units'
 import Panel, { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import { formatMoney, formatNumber, formatQty } from '../../utils/format'
 
 const PAYMENT_LABELS = { efectivo: 'Efectivo', tarjeta: 'Tarjeta', mercado_pago: 'Mercado Pago', transferencia: 'Transferencia' }

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { COLORS, FONTS } from '../../../styles/theme'
 import { getModifierGroup } from '../../../mock/modifiers'
 import AdminModal from '../AdminModal'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import { formatMoney } from '../../utils/format'
 
 export default function ModifierPickerModal({ product, open, onClose, onConfirm }) {

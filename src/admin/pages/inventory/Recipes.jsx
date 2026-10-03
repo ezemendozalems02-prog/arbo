@@ -7,7 +7,7 @@ import { PRODUCTS } from '../../../mock/products'
 import { calcRecipeSummary } from '../../../services/recipeCostService'
 import { formatMoney } from '../../utils/format'
 import Panel, { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import RecipeFormModal from '../../components/inventory/RecipeFormModal'
 
 const inputStyle = {

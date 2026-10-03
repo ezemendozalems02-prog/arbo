@@ -4,7 +4,7 @@ import { useCRM } from '../../../context/CRMContext'
 import { useToast } from '../../context/ToastContext'
 import { formatNumber } from '../../utils/format'
 import Panel from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import LevelFormModal from '../../components/crm/LevelFormModal'
 
 export default function Levels() {

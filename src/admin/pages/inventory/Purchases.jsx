@@ -6,7 +6,7 @@ import { useToast } from '../../context/ToastContext'
 import { PURCHASE_STATUSES, PURCHASE_STATUS_LABELS } from '../../../mock/purchases'
 import { formatMoney, formatDate } from '../../utils/format'
 import { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import NewPurchaseModal from '../../components/inventory/NewPurchaseModal'
 
 const STATUS_STYLE = {

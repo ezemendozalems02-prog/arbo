@@ -1,0 +1,364 @@
+/* ==========================================================================
+   ARBO OS — Design System
+   Los tokens viven en :root para que también los vean los portales (modales,
+   toasts, tooltips, paleta, tour), que se montan en <body> fuera del layout.
+   Son variables --os-* que el sitio público no usa, y este archivo solo se
+   carga con el chunk del admin. Los estilos base sí quedan limitados a
+   .arbo-os. Los componentes consumen alias semánticos (--os-bg, --os-ink…),
+   nunca la paleta cruda: un modo oscuro futuro solo redefine esos alias.
+   ========================================================================== */
+
+:root {
+  /* — Paleta de marca — */
+  --os-forest: #173A2C;
+  --os-deep: #0D2119;
+  --os-leaf: #527A63;
+  --os-leaf-soft: #A9C2B0;
+  --os-sand: #E9E1D2;
+  --os-cream: #F7F4EE;
+  --os-white: #FFFFFF;
+  --os-gold: #B99A62;
+
+  /* — Tinta (texto) — */
+  --os-ink: #18211C;
+  --os-ink-2: #4B5750;
+  --os-ink-3: #7D8781;
+  --os-ink-inverse: #F7F4EE;
+  --os-ink-inverse-2: rgba(247, 244, 238, 0.68);
+  --os-ink-inverse-3: rgba(247, 244, 238, 0.42);
+
+  /* — Superficies (profundidad por capas, no blanco puro en todos lados) — */
+  --os-bg: var(--os-cream);
+  --os-surface: var(--os-white);
+  --os-surface-2: #FBF9F5;
+  --os-surface-3: #F2EEE6;
+  --os-surface-inverse: var(--os-forest);
+  --os-overlay: rgba(13, 33, 25, 0.42);
+
+  /* — Líneas — */
+  --os-line: rgba(23, 58, 44, 0.09);
+  --os-line-strong: rgba(23, 58, 44, 0.17);
+  --os-line-inverse: rgba(247, 244, 238, 0.12);
+
+  /* — Estados (color + fondo + borde; siempre acompañados de ícono/texto) — */
+  --os-success: #2F6B4A;  --os-success-bg: #E5F0E9;  --os-success-line: #C5DECF;
+  --os-warning: #8A6418;  --os-warning-bg: #F7EDD7;  --os-warning-line: #EBD7A9;
+  --os-danger: #A23F33;   --os-danger-bg: #F8E4E0;   --os-danger-line: #EDC4BC;
+  --os-info: #2E5E7A;     --os-info-bg: #E2EDF3;     --os-info-line: #C1D7E4;
+  --os-neutral: #4B5750;  --os-neutral-bg: #EFEBE3;  --os-neutral-line: #DED8CC;
+  --os-pending: #7A6233;  --os-pending-bg: #F3EBDB;  --os-pending-line: #E2D3B3;
+
+  /* — Tipografía — */
+  --os-font-display: 'Cormorant Garamond', Georgia, serif;
+  --os-font-ui: 'Manrope', system-ui, -apple-system, sans-serif;
+  --os-font-mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+
+  --os-text-display: 34px;  /* saludo del dashboard, momentos de marca */
+  --os-text-title: 26px;    /* título de página */
+  --os-text-heading: 16px;  /* títulos de sección / card */
+  --os-text-body: 14px;
+  --os-text-sm: 13px;
+  --os-text-caption: 12px;
+  --os-text-label: 11px;    /* uppercase + tracking */
+  --os-text-data: 28px;     /* valores de métricas */
+
+  /* — Espaciado (escala de 4px) — */
+  --os-space-1: 4px;  --os-space-2: 8px;   --os-space-3: 12px; --os-space-4: 16px;
+  --os-space-5: 20px; --os-space-6: 24px;  --os-space-8: 32px; --os-space-10: 40px;
+  --os-space-14: 56px;
+
+  /* — Radios — */
+  --os-radius-xs: 6px;
+  --os-radius-sm: 8px;    /* badges, chips */
+  --os-radius-md: 12px;   /* inputs, botones */
+  --os-radius-lg: 16px;   /* cards */
+  --os-radius-xl: 22px;   /* diálogos */
+  --os-radius-2xl: 28px;  /* hero, elementos especiales */
+  --os-radius-pill: 999px;
+
+  /* — Sombras: tinte verde profundo, nunca negro puro — */
+  --os-shadow-sm: 0 1px 2px rgba(13, 33, 25, 0.06);
+  --os-shadow-card: 0 1px 2px rgba(13, 33, 25, 0.04), 0 6px 20px -8px rgba(13, 33, 25, 0.08);
+  --os-shadow-elevated: 0 2px 6px rgba(13, 33, 25, 0.05), 0 12px 32px -8px rgba(13, 33, 25, 0.14);
+  --os-shadow-floating: 0 4px 12px rgba(13, 33, 25, 0.08), 0 28px 64px -12px rgba(13, 33, 25, 0.26);
+
+  /* — Movimiento — */
+  --os-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --os-dur-fast: 150ms;
+  --os-dur: 220ms;
+  --os-dur-slow: 300ms;
+
+  /* — Capas — */
+  --os-z-sidebar: 40;
+  --os-z-topbar: 50;
+  --os-z-dropdown: 600;
+  --os-z-drawer: 650;
+  --os-z-modal: 700;
+  --os-z-toast: 900;
+  --os-z-tour: 1000;
+  --os-z-palette: 1100;
+
+  /* — Layout — */
+  --os-sidebar-w: 264px;
+  --os-sidebar-w-collapsed: 76px;
+  --os-topbar-h: 64px;
+  --os-content-max: 1440px;
+
+  /* — Íconos — */
+  --os-icon-sm: 16px;
+  --os-icon-md: 18px;
+  --os-icon-lg: 22px;
+}
+
+.arbo-os {
+  background: var(--os-bg);
+  color: var(--os-ink);
+  font-family: var(--os-font-ui);
+  font-size: var(--os-text-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+.arbo-os ::selection { background: rgba(82, 122, 99, 0.22); }
+.arbo-os button { font-family: inherit; }
+
+/* Foco visible en TODO el admin. !important a propósito: muchos inputs de los
+   módulos traen `outline: none` inline y dejaban a la navegación por teclado
+   sin indicador. */
+.arbo-os :focus-visible {
+  outline: 2px solid var(--os-leaf) !important;
+  outline-offset: 2px;
+}
+.arbo-os input:focus,
+.arbo-os select:focus,
+.arbo-os textarea:focus {
+  border-color: var(--os-leaf) !important;
+  box-shadow: 0 0 0 3px rgba(82, 122, 99, 0.18) !important;
+  outline: none !important;
+}
+
+.arbo-os ::-webkit-scrollbar { width: 8px; height: 8px; }
+.arbo-os ::-webkit-scrollbar-track { background: transparent; }
+.arbo-os ::-webkit-scrollbar-thumb { background: var(--os-line-strong); border-radius: 8px; }
+
+.os-num { font-variant-numeric: tabular-nums; }
+.os-mono { font-family: var(--os-font-mono); font-size: 0.92em; letter-spacing: 0; }
+
+/* ==========================================================================
+   Botones
+   ========================================================================== */
+.os-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 40px; padding: 0 16px;
+  font-family: var(--os-font-ui); font-size: var(--os-text-sm); font-weight: 600; letter-spacing: 0.01em;
+  border-radius: var(--os-radius-md); border: 1px solid transparent;
+  cursor: pointer; text-decoration: none; white-space: nowrap; user-select: none;
+  transition: background var(--os-dur-fast) var(--os-ease), border-color var(--os-dur-fast) var(--os-ease),
+              color var(--os-dur-fast) var(--os-ease), box-shadow var(--os-dur-fast) var(--os-ease),
+              transform var(--os-dur-fast) var(--os-ease);
+}
+.os-btn:active:not(:disabled) { transform: scale(0.98); }
+.os-btn:disabled, .os-btn[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; }
+.os-btn svg { width: var(--os-icon-sm); height: var(--os-icon-sm); flex-shrink: 0; }
+
+.os-btn--sm { height: 32px; padding: 0 12px; font-size: var(--os-text-caption); border-radius: 10px; }
+.os-btn--lg { height: 48px; padding: 0 22px; font-size: var(--os-text-body); }
+.os-btn--full { width: 100%; }
+
+.os-btn--primary { background: var(--os-forest); color: var(--os-ink-inverse); box-shadow: var(--os-shadow-sm); }
+.os-btn--primary:hover:not(:disabled) { background: #1F4A39; box-shadow: var(--os-shadow-card); }
+
+.os-btn--secondary { background: var(--os-surface); color: var(--os-ink); border-color: var(--os-line-strong); }
+.os-btn--secondary:hover:not(:disabled) { background: var(--os-surface-2); border-color: var(--os-leaf); }
+
+.os-btn--ghost { background: transparent; color: var(--os-ink-2); }
+.os-btn--ghost:hover:not(:disabled) { background: var(--os-surface-3); color: var(--os-ink); }
+
+.os-btn--danger { background: var(--os-danger); color: #fff; }
+.os-btn--danger:hover:not(:disabled) { background: #8C3328; }
+
+.os-btn--success { background: var(--os-success); color: #fff; }
+.os-btn--success:hover:not(:disabled) { background: #275B3E; }
+
+/* Sobre fondos oscuros (hero del dashboard, onboarding) */
+.os-btn--inverse { background: var(--os-cream); color: var(--os-forest); }
+.os-btn--inverse:hover:not(:disabled) { background: #FFFFFF; box-shadow: var(--os-shadow-card); }
+.os-btn--ghost-inverse { background: rgba(247, 244, 238, 0.08); color: var(--os-ink-inverse); border-color: rgba(247, 244, 238, 0.18); }
+.os-btn--ghost-inverse:hover:not(:disabled) { background: rgba(247, 244, 238, 0.14); border-color: rgba(247, 244, 238, 0.32); }
+
+.os-btn--icon { width: 40px; padding: 0; }
+.os-btn--icon.os-btn--sm { width: 32px; }
+
+.os-btn--fab {
+  position: fixed; right: 24px; bottom: 24px; width: 56px; height: 56px; padding: 0;
+  border-radius: var(--os-radius-pill); box-shadow: var(--os-shadow-floating);
+}
+
+.os-spinner {
+  width: 14px; height: 14px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent;
+  animation: os-spin 0.7s linear infinite;
+}
+@keyframes os-spin { to { transform: rotate(360deg); } }
+
+/* ==========================================================================
+   Formularios
+   ========================================================================== */
+.os-field { display: flex; flex-direction: column; gap: 6px; }
+.os-label { font-size: var(--os-text-caption); font-weight: 600; color: var(--os-ink-2); }
+.os-hint { font-size: var(--os-text-caption); color: var(--os-ink-3); }
+.os-error { font-size: var(--os-text-caption); color: var(--os-danger); }
+
+.os-input, .os-select, .os-textarea {
+  width: 100%; box-sizing: border-box;
+  height: 42px; padding: 0 14px;
+  font-family: var(--os-font-ui); font-size: var(--os-text-body); color: var(--os-ink);
+  background: var(--os-surface); border: 1px solid var(--os-line-strong); border-radius: var(--os-radius-md);
+  transition: border-color var(--os-dur-fast) var(--os-ease), box-shadow var(--os-dur-fast) var(--os-ease);
+}
+.os-input::placeholder, .os-textarea::placeholder { color: var(--os-ink-3); }
+.os-input:hover, .os-select:hover, .os-textarea:hover { border-color: var(--os-leaf-soft); }
+.os-textarea { height: auto; min-height: 96px; padding: 12px 14px; resize: vertical; }
+.os-select { appearance: none; padding-right: 36px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%237D8781' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; }
+.os-input[aria-invalid="true"] { border-color: var(--os-danger); }
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+.os-card {
+  background: var(--os-surface);
+  border: 1px solid var(--os-line);
+  border-radius: var(--os-radius-lg);
+  box-shadow: var(--os-shadow-card);
+}
+.os-card--interactive { transition: transform var(--os-dur) var(--os-ease), box-shadow var(--os-dur) var(--os-ease), border-color var(--os-dur) var(--os-ease); }
+.os-card--interactive:hover { transform: translateY(-2px); box-shadow: var(--os-shadow-elevated); border-color: var(--os-line-strong); }
+
+/* ==========================================================================
+   Badges de estado
+   ========================================================================== */
+.os-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 22px; padding: 0 9px;
+  font-size: var(--os-text-label); font-weight: 700; letter-spacing: 0.03em; white-space: nowrap;
+  border-radius: var(--os-radius-pill); border: 1px solid transparent;
+}
+.os-badge svg { width: 12px; height: 12px; }
+.os-badge--success   { color: var(--os-success); background: var(--os-success-bg); border-color: var(--os-success-line); }
+.os-badge--warning   { color: var(--os-warning); background: var(--os-warning-bg); border-color: var(--os-warning-line); }
+.os-badge--danger    { color: var(--os-danger);  background: var(--os-danger-bg);  border-color: var(--os-danger-line); }
+.os-badge--info      { color: var(--os-info);    background: var(--os-info-bg);    border-color: var(--os-info-line); }
+.os-badge--neutral   { color: var(--os-neutral); background: var(--os-neutral-bg); border-color: var(--os-neutral-line); }
+.os-badge--pending   { color: var(--os-pending); background: var(--os-pending-bg); border-color: var(--os-pending-line); }
+.os-badge--processing{ color: var(--os-info);    background: var(--os-info-bg);    border-color: var(--os-info-line); }
+.os-badge--completed { color: var(--os-ink-inverse); background: var(--os-forest); border-color: var(--os-forest); }
+
+/* ==========================================================================
+   Skeleton
+   ========================================================================== */
+.os-skeleton {
+  background: linear-gradient(90deg, var(--os-surface-3) 0%, #F8F5EF 50%, var(--os-surface-3) 100%);
+  background-size: 200% 100%;
+  border-radius: var(--os-radius-sm);
+  animation: os-shimmer 1.4s var(--os-ease) infinite;
+}
+@keyframes os-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+/* ==========================================================================
+   Pequeñas piezas
+   ========================================================================== */
+.os-kbd {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 5px;
+  font-family: var(--os-font-ui); font-size: 11px; font-weight: 600; color: var(--os-ink-3);
+  background: var(--os-surface); border: 1px solid var(--os-line-strong); border-bottom-width: 2px; border-radius: 5px;
+}
+
+.os-tooltip {
+  position: fixed; z-index: var(--os-z-palette);
+  padding: 6px 10px; font-size: var(--os-text-caption); font-weight: 600; white-space: nowrap;
+  color: var(--os-ink-inverse); background: var(--os-deep); border-radius: var(--os-radius-sm);
+  box-shadow: var(--os-shadow-elevated); pointer-events: none;
+}
+
+.os-progress { height: 6px; border-radius: var(--os-radius-pill); background: var(--os-surface-3); overflow: hidden; }
+.os-progress > span { display: block; height: 100%; border-radius: inherit; background: var(--os-leaf);
+  transition: width var(--os-dur-slow) var(--os-ease); }
+
+.os-segmented { display: inline-flex; padding: 3px; gap: 2px; background: var(--os-surface-3); border-radius: 10px; }
+.os-segmented button {
+  height: 28px; padding: 0 12px; border: 0; border-radius: 8px; cursor: pointer;
+  font-size: var(--os-text-caption); font-weight: 600; color: var(--os-ink-2); background: transparent;
+  transition: background var(--os-dur-fast) var(--os-ease), color var(--os-dur-fast) var(--os-ease), box-shadow var(--os-dur-fast) var(--os-ease);
+}
+.os-segmented button:hover { color: var(--os-ink); }
+.os-segmented button[aria-pressed="true"] { background: var(--os-surface); color: var(--os-ink); box-shadow: var(--os-shadow-sm); }
+
+/* Pestañas de módulo (perfil de cliente, filtros…) */
+.os-tabs { display: flex; gap: 4px; overflow-x: auto; border-bottom: 1px solid var(--os-line); margin-bottom: 20px; -webkit-overflow-scrolling: touch; }
+.os-tab {
+  flex-shrink: 0; position: relative; height: 40px; padding: 0 14px; border: 0; background: none; cursor: pointer;
+  font-size: var(--os-text-sm); font-weight: 600; color: var(--os-ink-3);
+  transition: color var(--os-dur-fast) var(--os-ease);
+}
+.os-tab:hover { color: var(--os-ink); }
+.os-tab[aria-selected="true"] { color: var(--os-forest); }
+.os-tab[aria-selected="true"]::after {
+  content: ''; position: absolute; left: 10px; right: 10px; bottom: -1px; height: 2px;
+  border-radius: 2px; background: var(--os-forest);
+}
+
+/* ==========================================================================
+   Navegación (sidebar)
+   ========================================================================== */
+.os-nav-link {
+  position: relative; display: flex; align-items: center; gap: 12px;
+  height: 38px; padding: 0 12px; border-radius: 10px;
+  font-size: var(--os-text-sm); font-weight: 500; color: var(--os-ink-inverse-2); text-decoration: none;
+  background: none; border: 0; width: 100%; cursor: pointer; text-align: left;
+  transition: background var(--os-dur-fast) var(--os-ease), color var(--os-dur-fast) var(--os-ease);
+}
+.os-nav-link svg { width: var(--os-icon-md); height: var(--os-icon-md); flex-shrink: 0; opacity: 0.85; }
+.os-nav-link:hover { background: rgba(247, 244, 238, 0.06); color: var(--os-ink-inverse); }
+.os-nav-link[aria-current="page"], .os-nav-link.is-active {
+  background: rgba(247, 244, 238, 0.1); color: var(--os-ink-inverse);
+}
+.os-nav-link[aria-current="page"]::before, .os-nav-link.is-active::before {
+  content: ''; position: absolute; left: -12px; top: 9px; bottom: 9px; width: 3px;
+  border-radius: 0 3px 3px 0; background: var(--os-gold);
+}
+.os-nav-link[aria-current="page"] svg, .os-nav-link.is-active svg { opacity: 1; color: var(--os-gold); }
+.os-nav-sublink {
+  display: flex; align-items: center; height: 32px; padding: 0 12px 0 42px; border-radius: 8px;
+  font-size: var(--os-text-caption); font-weight: 500; color: var(--os-ink-inverse-3); text-decoration: none;
+  transition: background var(--os-dur-fast) var(--os-ease), color var(--os-dur-fast) var(--os-ease);
+}
+.os-nav-sublink:hover { color: var(--os-ink-inverse); background: rgba(247, 244, 238, 0.05); }
+.os-nav-sublink[aria-current="page"] { color: var(--os-ink-inverse); font-weight: 600; }
+
+/* Botones livianos de la topbar */
+.os-icon-btn {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 10px; border: 0; background: transparent; color: var(--os-ink-2); cursor: pointer;
+  transition: background var(--os-dur-fast) var(--os-ease), color var(--os-dur-fast) var(--os-ease);
+}
+.os-icon-btn:hover { background: var(--os-surface-3); color: var(--os-ink); }
+.os-icon-btn svg { width: var(--os-icon-md); height: var(--os-icon-md); }
+
+.os-menu-item {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border-radius: 8px; border: 0;
+  background: none; cursor: pointer; text-align: left; text-decoration: none;
+  font-size: var(--os-text-sm); color: var(--os-ink);
+  transition: background var(--os-dur-fast) var(--os-ease);
+}
+.os-menu-item:hover, .os-menu-item[data-active="true"] { background: var(--os-surface-3); }
+.os-menu-item svg { width: var(--os-icon-sm); height: var(--os-icon-sm); color: var(--os-ink-3); flex-shrink: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .os-skeleton { animation: none; }
+  .os-card--interactive:hover { transform: none; }
+}
+
+/* Inputs que ya tienen su propio contenedor con foco (paleta de comandos). */
+.arbo-os .os-bare-input:focus { box-shadow: none !important; border-color: transparent !important; }

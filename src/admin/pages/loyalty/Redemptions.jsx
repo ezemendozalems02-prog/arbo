@@ -5,7 +5,7 @@ import { useCRM } from '../../../context/CRMContext'
 import { useToast } from '../../context/ToastContext'
 import { formatNumber, formatDate } from '../../utils/format'
 import { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import RedeemRewardModal from '../../components/crm/RedeemRewardModal'
 
 const STATUS_STYLE = {

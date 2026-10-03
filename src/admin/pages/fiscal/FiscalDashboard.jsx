@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { COLORS, FONTS } from '../../../styles/theme'
 import { formatMoney, formatDate } from '../../utils/format'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import { EmptyState } from '../../components/Panel'
 
 export default function FiscalDashboard() {

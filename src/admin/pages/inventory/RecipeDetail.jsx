@@ -8,7 +8,7 @@ import { UNIT_SHORT } from '../../../mock/units'
 import { calcIngredientCost, calcRecipeSummary } from '../../../services/recipeCostService'
 import { formatMoney, formatQty } from '../../utils/format'
 import Panel, { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import RecipeFormModal from '../../components/inventory/RecipeFormModal'
 
 const Row = ({ label, value }) => (

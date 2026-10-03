@@ -2,7 +2,7 @@ import { COLORS, FONTS } from '../../../styles/theme'
 import { calcOrderKitchenStatus } from '../../../services/kitchenService'
 import { getStationLabel } from '../../../mock/stations'
 import { KITCHEN_STATUS_LABELS } from '../../../mock/kitchenConfig'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 const TICKET_ICON = { SENT: '🆕', PREPARING: '⏳', READY: '✓', DELIVERED: '✓', CANCELLED: '✕' }
 const TICKET_COLOR = {

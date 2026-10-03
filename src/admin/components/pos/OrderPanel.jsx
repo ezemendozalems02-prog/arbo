@@ -3,7 +3,7 @@ import { calcLineTotal, calcOrderTotals } from '../../../services/salesCalculati
 import { buildPendingTicketItems } from '../../../services/kitchenService'
 import { formatMoney } from '../../utils/format'
 import { EmptyState } from '../Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 function QtyStepper({ value, onChange, min = 0 }) {
   const atFloor = value <= min

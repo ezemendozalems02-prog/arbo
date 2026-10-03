@@ -6,7 +6,7 @@ import { useToast } from '../../context/ToastContext'
 import { getSegmentCount } from '../../../services/segmentService'
 import { formatNumber } from '../../utils/format'
 import { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import NewSegmentModal from '../../components/crm/NewSegmentModal'
 
 export default function Segments() {

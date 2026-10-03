@@ -5,7 +5,7 @@ import { useToast } from '../../context/ToastContext'
 import { AUTOMATION_TRIGGER_LABELS, AUTOMATION_ACTION_LABELS } from '../../../mock/automations'
 import { formatNumber, formatDate } from '../../utils/format'
 import { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import NewAutomationModal from '../../components/crm/NewAutomationModal'
 
 // Bloque 26-29 — "ejecutar" siempre simula: calcula clientes que matchean el

@@ -6,7 +6,7 @@ import { REWARD_TYPE_LABELS } from '../../../mock/rewards'
 import { isRewardActive } from '../../../services/rewardService'
 import { formatNumber, formatDate } from '../../utils/format'
 import { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import NewRewardModal from '../../components/crm/NewRewardModal'
 
 const STATUS_STYLE = {

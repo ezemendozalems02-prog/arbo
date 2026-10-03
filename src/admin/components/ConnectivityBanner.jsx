@@ -1,64 +1,38 @@
+import { CloudOff, RefreshCw } from 'lucide-react'
 import { useOffline } from '../../context/OfflineContext'
-import { COLORS, FONTS } from '../../styles/theme'
+import { OS } from '../styles/tokens'
 
+// Estado de conexión en la topbar. Con todo en orden no muestra nada (la
+// topbar se mantiene liviana); aparece solo sin conexión, sincronizando o
+// con operaciones pendientes de subir. Misma lógica de OfflineContext.
 export default function ConnectivityBanner() {
   const { isOnline, syncStatus, pendingCount, triggerSync } = useOffline()
 
-  const isWarning = !isOnline || syncStatus === 'SYNC_ERROR' || pendingCount > 0
-  if (!isWarning && syncStatus === 'ONLINE') {
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 700, color: '#1F402F' }}>
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#2E7D32', display: 'inline-block' }} />
-        <span>ONLINE</span>
-      </div>
-    )
-  }
+  const syncing = isOnline && syncStatus === 'SYNCING'
+  const failed = isOnline && syncStatus === 'SYNC_ERROR'
+  if (isOnline && !syncing && !failed && pendingCount === 0) return null
 
-  const bgColor = !isOnline ? 'rgba(166,91,74,0.12)' : (syncStatus === 'SYNCING' ? 'rgba(176,138,62,0.12)' : 'rgba(31,64,47,0.08)')
-  const textColor = !isOnline ? '#8A4536' : (syncStatus === 'SYNCING' ? '#8A6A2E' : COLORS.green)
-  const dotColor = !isOnline ? '#C62828' : (syncStatus === 'SYNCING' ? '#F9A825' : '#2E7D32')
+  const tone = !isOnline || failed
+    ? { color: OS.color.danger, bg: OS.color.dangerBg }
+    : { color: OS.color.warning, bg: OS.color.warningBg }
+  const label = !isOnline ? 'Sin conexión' : syncing ? 'Sincronizando…' : failed ? 'Error al sincronizar' : 'Cambios sin subir'
+  const Icon = !isOnline ? CloudOff : RefreshCw
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '6px 12px',
-        background: bgColor,
-        borderRadius: 4,
-        gap: 12,
-        fontFamily: FONTS.sans,
-        fontSize: 11,
-        color: textColor,
-        fontWeight: 600,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-        <span style={{ width: 8, height: 8, borderRadius: '50%', background: dotColor, display: 'inline-block' }} />
-        <span>
-          {!isOnline ? 'MODO OFFLINE' : (syncStatus === 'SYNCING' ? 'SINCRONIZANDO...' : 'EN LÍNEA')}
-          {pendingCount > 0 && ` (${pendingCount} operaciones pendientes)`}
-        </span>
-      </div>
-
-      {pendingCount > 0 && isOnline && (
-        <button
-          onClick={triggerSync}
-          style={{
-            background: 'none',
-            border: `1px solid ${textColor}`,
-            borderRadius: 3,
-            padding: '2px 8px',
-            color: textColor,
-            cursor: 'pointer',
-            fontSize: 10,
-            fontWeight: 700,
-          }}
-        >
-          Sincronizar ahora
+    <div role="status" aria-live="polite" style={{
+      display: 'inline-flex', alignItems: 'center', gap: 8, height: 32, padding: '0 6px 0 12px', borderRadius: 999,
+      background: tone.bg, color: tone.color, fontSize: 12, fontWeight: 700, whiteSpace: 'nowrap',
+    }}>
+      <Icon size={14} aria-hidden="true" style={syncing ? { animation: 'os-spin 1s linear infinite' } : undefined} />
+      <span>{label}{pendingCount > 0 && ` · ${pendingCount}`}</span>
+      {pendingCount > 0 && isOnline && !syncing ? (
+        <button type="button" onClick={triggerSync} style={{
+          height: 24, padding: '0 10px', borderRadius: 999, border: 0, cursor: 'pointer',
+          background: tone.color, color: '#fff', fontSize: 11, fontWeight: 700,
+        }}>
+          Sincronizar
         </button>
-      )}
+      ) : <span style={{ width: 6 }} />}
     </div>
   )
 }

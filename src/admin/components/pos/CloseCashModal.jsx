@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { COLORS, FONTS } from '../../../styles/theme'
 import AdminModal from '../AdminModal'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import { calcCashDifference } from '../../../services/cashCalculations'
 import { formatMoney } from '../../utils/format'
 

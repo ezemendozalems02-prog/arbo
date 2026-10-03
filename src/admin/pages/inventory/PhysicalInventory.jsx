@@ -7,7 +7,7 @@ import { INVENTORY_CATEGORIES } from '../../../mock/inventoryCategories'
 import { UNIT_SHORT } from '../../../mock/units'
 import { formatMoney } from '../../utils/format'
 import Panel, { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 const inputStyle = {
   width: 100, padding: '8px 10px', background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}`,

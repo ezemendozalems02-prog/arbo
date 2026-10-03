@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { COLORS, FONTS } from '../../../styles/theme'
 import AdminModal from '../AdminModal'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 
 export default function OpenTableModal({ table, open, onClose, onOpenTable }) {
   const [partySize, setPartySize] = useState(2)

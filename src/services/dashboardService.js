@@ -4,9 +4,9 @@
 // llamando a las mismas funciones con la misma forma de retorno.
 import { MOCK_NOW } from '../mock/config'
 import { CUSTOMERS_COUNT } from '../mock/customers'
-import { ORDERS, ORDER_STATUS_LABELS, getPendingOrders, getTodayOrders } from '../mock/orders'
+import { ORDERS, ORDER_STATUS_LABELS, getOrdersForDay, getPendingOrders, getTodayOrders } from '../mock/orders'
 import { getProductById } from '../mock/products'
-import { getTodayReservations, getUpcomingReservations, RESERVATIONS } from '../mock/reservations'
+import { getReservationsForDay, getTodayReservations, getUpcomingReservations, RESERVATIONS } from '../mock/reservations'
 
 const startOfDay = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate())
 const today = startOfDay(MOCK_NOW)
@@ -27,6 +27,20 @@ export function getDashboardSummary() {
     reservationsToday,
     customersTotal: CUSTOMERS_COUNT,
     avgTicket,
+  }
+}
+
+// Mismo cálculo que getDashboardSummary aplicado al día anterior: alimenta
+// las comparaciones "vs ayer" del tablero.
+export function getYesterdaySummary() {
+  const yesterday = new Date(today.getTime() - 86400000)
+  const orders = getOrdersForDay(yesterday).filter(o => !isCancelled(o))
+  const sales = orders.reduce((sum, o) => sum + o.total, 0)
+  return {
+    salesToday: sales,
+    ordersToday: orders.length,
+    reservationsToday: getReservationsForDay(yesterday).filter(r => r.status !== 'cancelada').length,
+    avgTicket: orders.length > 0 ? Math.round(sales / orders.length) : 0,
   }
 }
 

@@ -7,7 +7,7 @@ import { CAMPAIGN_CHANNEL_LABELS, CAMPAIGN_STATUS_LABELS } from '../../../mock/c
 import { formatNumber, formatDate } from '../../utils/format'
 import StatCard from '../../components/StatCard'
 import { EmptyState } from '../../components/Panel'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import NewCampaignModal from '../../components/crm/NewCampaignModal'
 
 const STATUS_STYLE = {

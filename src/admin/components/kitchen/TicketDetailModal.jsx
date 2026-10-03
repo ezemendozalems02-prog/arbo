@@ -3,7 +3,7 @@ import { calcElapsedMs, calcPrepMs, formatDuration } from '../../../services/kit
 import { getStationLabel } from '../../../mock/stations'
 import { KITCHEN_STATUS_LABELS } from '../../../mock/kitchenConfig'
 import AdminModal from '../AdminModal'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import { formatTime } from '../../utils/format'
 
 const Row = ({ label, value }) => (

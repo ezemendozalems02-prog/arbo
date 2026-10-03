@@ -1,88 +1,125 @@
-import { useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
-import { COLORS, FONTS } from '../../styles/theme'
-import { useIsMobile } from '../../hooks/useMediaQuery'
-import { ADMIN_ROUTES } from '../nav.config'
-import { MenuIcon, CloseIcon } from '../../components/ui/icons'
+import { Suspense, useCallback, useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useIsMobile, usePrefersReducedMotion } from '../../hooks/useMediaQuery'
+import { useLockBodyScroll } from '../../hooks/useLockBodyScroll'
+import Portal from '../../components/ui/Portal'
+import { getPageMeta } from '../nav.config'
+import { OS, TYPE } from '../styles/tokens'
+import { DashboardSkeleton, PageSkeleton } from '../ui/Skeleton'
 import AdminSidebar from './AdminSidebar'
-import ConnectivityBanner from '../components/ConnectivityBanner'
+import Topbar from './Topbar'
+import CommandPalette from './CommandPalette'
 
-const SIDEBAR_WIDTH = 260
+const COLLAPSE_KEY = 'arbo_os_sidebar_collapsed'
+const readCollapsed = () => { try { return localStorage.getItem(COLLAPSE_KEY) === '1' } catch { return false } }
 
-// Rutas de detalle sin entrada propia en el sidebar (nav.config.js) — un
-// título fijo para cada prefijo, en vez de encadenar startsWith() sueltos.
-const DETAIL_TITLES = [
-  ['/admin/ventas/', 'Detalle de venta'],
-  ['/admin/inventario/fisico', 'Inventario físico'],
-  ['/admin/inventario/', 'Ficha de insumo'],
-  ['/admin/recetas/', 'Receta'],
-  ['/admin/compras/', 'Detalle de compra'],
-  ['/admin/proveedores/', 'Proveedor'],
-  ['/admin/marketing/campanas/', 'Campaña'],
-  ['/admin/clientes/segmentos', 'Segmentos'],
-  ['/admin/clientes/actividad', 'Actividad'],
-  ['/admin/clientes/', 'Cliente'],
-]
+// Pantallas que manejan su propio encabezado/lienzo.
+const FULL_BLEED = ['/admin/cocina']
+const OWN_HEADER = ['/admin', '/admin/cocina']
 
 export default function AdminLayout({ children }) {
-  const location = useLocation()
+  const { pathname } = useLocation()
   const isMobile = useIsMobile()
+  const reduced = usePrefersReducedMotion()
+  const [collapsed, setCollapsed] = useState(readCollapsed)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  const meta = getPageMeta(pathname)
 
-  const currentRoute = ADMIN_ROUTES.find(r => r.path === location.pathname)
-  const detailTitle = DETAIL_TITLES.find(([prefix]) => location.pathname.startsWith(prefix))?.[1]
-  const title = currentRoute?.label ?? detailTitle ?? 'ARBO OS'
-  // El KDS es una pantalla de cocina, no un panel de administración más: se
-  // ve a distancia durante el servicio, así que controla su propio fondo y
-  // márgenes en vez de quedar encajonado en el padding estándar del admin.
-  const isKDS = location.pathname === '/admin/cocina'
+  useEffect(() => { document.title = `${meta.title} | ARBO OS` }, [meta.title])
+
+  const toggleCollapsed = useCallback(() => {
+    setCollapsed(c => {
+      try { localStorage.setItem(COLLAPSE_KEY, c ? '0' : '1') } catch { /* sin storage */ }
+      return !c
+    })
+  }, [])
+
+  // Al navegar se cierran el drawer mobile y la paleta.
+  const [prevPath, setPrevPath] = useState(pathname)
+  if (pathname !== prevPath) {
+    setPrevPath(pathname)
+    setDrawerOpen(false)
+  }
+
+  useLockBodyScroll(isMobile && drawerOpen)
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault()
+        setPaletteOpen(o => !o)
+      } else if (e.key === 'Escape' && drawerOpen) {
+        setDrawerOpen(false)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [drawerOpen])
+
+  const sidebarW = collapsed ? 'var(--os-sidebar-w-collapsed)' : 'var(--os-sidebar-w)'
+  const fullBleed = FULL_BLEED.includes(pathname)
+  const showHeader = !OWN_HEADER.includes(pathname)
 
   return (
-    <div style={{ minHeight: '100vh', background: COLORS.cream, display: 'flex' }}>
+    <div className="arbo-os" style={{ minHeight: '100vh' }}>
       {!isMobile && (
-        <aside style={{ width: SIDEBAR_WIDTH, flexShrink: 0 }}>
-          <div style={{ position: 'fixed', top: 0, left: 0, width: SIDEBAR_WIDTH, height: '100vh' }}>
-            <AdminSidebar />
-          </div>
+        <aside style={{
+          position: 'fixed', top: 0, left: 0, bottom: 0, width: sidebarW, zIndex: 40,
+          transition: 'width var(--os-dur) var(--os-ease)',
+        }}>
+          <AdminSidebar collapsed={collapsed} onToggleCollapse={toggleCollapsed} />
         </aside>
       )}
 
-      {isMobile && drawerOpen && (
-        <>
-          <div onClick={() => setDrawerOpen(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(12,16,20,0.6)', zIndex: 500 }} />
-          <div style={{ position: 'fixed', top: 0, left: 0, width: 'min(280px, 82vw)', height: '100vh', zIndex: 501 }}>
-            <AdminSidebar onNavigate={() => setDrawerOpen(false)} />
-          </div>
-        </>
+      {isMobile && (
+        <Portal>
+          <AnimatePresence>
+            {drawerOpen && (
+              <div className="arbo-os" style={{ background: 'transparent' }}>
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setDrawerOpen(false)}
+                  style={{ position: 'fixed', inset: 0, background: OS.color.overlay, zIndex: 650 }} />
+                <motion.aside initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }}
+                  transition={{ type: 'tween', duration: 0.24, ease: [0.22, 0.61, 0.36, 1] }}
+                  style={{ position: 'fixed', top: 0, left: 0, bottom: 0, width: 'min(300px, 86vw)', zIndex: 651, boxShadow: OS.shadow.floating }}>
+                  <AdminSidebar mobile onNavigate={() => setDrawerOpen(false)} />
+                </motion.aside>
+              </div>
+            )}
+          </AnimatePresence>
+        </Portal>
       )}
 
-      <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-        <header style={{
-          position: 'sticky', top: 0, zIndex: 100, background: 'rgba(247,241,227,0.97)', backdropFilter: 'blur(14px)',
-          borderBottom: `1px solid ${COLORS.lineGreen}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-          padding: '16px 24px', gap: 16,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-            {isMobile && (
-              <button onClick={() => setDrawerOpen(o => !o)} aria-label="Abrir menú"
-                style={{ background: 'none', border: 'none', cursor: 'pointer', color: COLORS.greenDark, padding: 4 }}>
-                {drawerOpen ? <CloseIcon /> : <MenuIcon />}
-              </button>
-            )}
-            <h1 style={{ fontFamily: FONTS.serif, fontSize: 24, color: COLORS.greenDark, fontWeight: 500 }}>{title}</h1>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <ConnectivityBanner />
-            <Link to="/" style={{ fontFamily: FONTS.sans, fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: COLORS.green, textDecoration: 'none' }}>
-              ← Ver sitio
-            </Link>
-          </div>
-        </header>
+      <div style={{
+        marginLeft: isMobile ? 0 : sidebarW, minWidth: 0, minHeight: '100vh', display: 'flex', flexDirection: 'column',
+        transition: 'margin-left var(--os-dur) var(--os-ease)',
+      }}>
+        <Topbar meta={meta} isMobile={isMobile} onOpenMenu={() => setDrawerOpen(true)} onOpenSearch={() => setPaletteOpen(true)} />
 
-        <main style={{ flex: 1, padding: isKDS ? 0 : (isMobile ? '20px 16px 60px' : '28px 32px 70px') }}>
-          {children}
+        <main id="os-main" style={{
+          flex: 1, width: '100%', boxSizing: 'border-box',
+          ...(fullBleed ? {} : { maxWidth: 'var(--os-content-max)', margin: '0 auto', padding: isMobile ? '20px 16px 72px' : '28px 32px 80px' }),
+        }}>
+          {/* Solo fade-in al entrar: un exit animado mostraría la página nueva
+              desvaneciéndose, porque <Routes> ya resolvió la ruta destino. */}
+          <motion.div key={pathname}
+              initial={reduced ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.18, ease: [0.22, 0.61, 0.36, 1] }}>
+              {showHeader && !fullBleed && (
+                <header style={{ marginBottom: 24 }}>
+                  <h1 style={{ ...TYPE.title, fontSize: isMobile ? 26 : 30 }}>{meta.title}</h1>
+                  {meta.description && <p style={{ ...TYPE.body, marginTop: 4, color: OS.color.ink3 }}>{meta.description}</p>}
+                </header>
+              )}
+              <Suspense fallback={pathname === '/admin' ? <DashboardSkeleton /> : <PageSkeleton />}>
+                {children}
+              </Suspense>
+          </motion.div>
         </main>
       </div>
+
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
     </div>
   )
 }

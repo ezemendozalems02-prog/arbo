@@ -8,7 +8,7 @@ import { formatMoney, formatQty, formatDate } from '../../utils/format'
 import StatCard from '../../components/StatCard'
 import Panel, { EmptyState } from '../../components/Panel'
 import BarChart from '../../components/BarChart'
-import Button from '../../../components/ui/Button'
+import Button from '../../ui/Button'
 import RegisterWasteModal from '../../components/inventory/RegisterWasteModal'
 
 const MONTH_LABELS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
