@@ -362,3 +362,19 @@
 
 /* Inputs que ya tienen su propio contenedor con foco (paleta de comandos). */
 .arbo-os .os-bare-input:focus { box-shadow: none !important; border-color: transparent !important; }
+
+/* ==========================================================================
+   Plano de mesas
+   ========================================================================== */
+.os-table-tile { transition: transform var(--os-dur-fast) var(--os-ease), opacity var(--os-dur) var(--os-ease); }
+.os-table-tile .os-table-tile__top { transition: box-shadow var(--os-dur-fast) var(--os-ease), filter var(--os-dur-fast) var(--os-ease); }
+.os-table-tile:hover { transform: translateY(-2px); }
+.os-table-tile:hover .os-table-tile__top { filter: brightness(1.06); box-shadow: inset 0 0 0 2px var(--tile-ring), 0 8px 18px rgba(13, 33, 25, 0.25) !important; }
+.os-table-tile:active { transform: scale(0.97); }
+.os-table-tile:focus-visible { outline: none !important; }
+.os-table-tile:focus-visible .os-table-tile__top { box-shadow: 0 0 0 3px var(--os-surface), 0 0 0 6px var(--os-leaf) !important; }
+@keyframes os-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+@media (prefers-reduced-motion: reduce) {
+  .os-table-tile:hover { transform: none; }
+  .os-table-tile [title] { animation: none !important; }
+}
