@@ -49,32 +49,22 @@ export default function CheckoutModal({ order, open, onClose, onConfirmed }) {
               ARBO CLUB · +{formatNumber(completedSale.loyaltyPointsEarned)} puntos para {completedSale.customerName}
             </p>
           )}
-          {/* Capa Fiscal Argentina (AFIP / ARCA) */}
-          <div style={{
-            background: 'rgba(48,77,59,0.05)',
-            border: `1px solid ${COLORS.lineGreen}`,
+          {/* Estado fiscal: ARBO todavía no emite comprobantes ante ARCA. Ninguna
+              venta tiene factura ni CAE, así que no se muestra número, tipo de
+              comprobante ni CAE: eso solo puede salir de una respuesta fiscal
+              real y persistida. */}
+          <div role="status" style={{
+            background: 'rgba(176,138,62,0.1)',
+            border: '1px solid rgba(176,138,62,0.4)',
             padding: '10px 14px',
             marginBottom: 24,
             textAlign: 'left',
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontFamily: FONTS.sans, fontSize: 11, fontWeight: 700, color: COLORS.greenDark }}>
-                {completedSale.fiscalInvoice?.invoice_type || 'FACTURA B'} #0001-{String(completedSale.number).padStart(8, '0')}
-              </span>
-              <span style={{
-                fontFamily: FONTS.sans,
-                fontSize: 10,
-                fontWeight: 700,
-                padding: '2px 6px',
-                borderRadius: 2,
-                background: completedSale.fiscalInvoice?.status === 'PENDING_CONTINGENCY' ? 'rgba(176,138,62,0.15)' : 'rgba(48,77,59,0.12)',
-                color: completedSale.fiscalInvoice?.status === 'PENDING_CONTINGENCY' ? '#8A6A2E' : COLORS.green,
-              }}>
-                {completedSale.fiscalInvoice?.status === 'PENDING_CONTINGENCY' ? 'CONTINGENCIA AFIP' : 'CAE AUTORIZADO'}
-              </span>
-            </div>
-            <p style={{ fontFamily: 'monospace', fontSize: 11, color: COLORS.onLightMuted, margin: '4px 0 0' }}>
-              {completedSale.fiscalInvoice?.cae ? `CAE: ${completedSale.fiscalInvoice.cae}` : 'CAE: 74289000104291 (AFIP RG 4892)'}
+            <p style={{ fontFamily: FONTS.sans, fontSize: 12, fontWeight: 700, color: '#8A6A2E', margin: 0 }}>
+              Comprobante fiscal no emitido
+            </p>
+            <p style={{ fontFamily: FONTS.sans, fontSize: 12, color: COLORS.onLightMuted, margin: '4px 0 0', lineHeight: 1.45 }}>
+              Esta venta no tiene factura ni CAE. La facturación electrónica todavía no está habilitada en ARBO.
             </p>
           </div>
           <Button full onClick={finish}>Cerrar</Button>
