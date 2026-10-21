@@ -146,7 +146,7 @@ export default function Login() {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="ejemplo@arbo.app"
+              placeholder="ejemplo@arbo.internal"
               required
               style={{
                 width: '100%',
@@ -216,7 +216,7 @@ export default function Login() {
           <div style={{ display: 'flex', gap: 8 }}>
             <button
               type="button"
-              onClick={() => fillDemo('admin@arbo.app', 'arbo2026')}
+              onClick={() => fillDemo('thiago.dueno@arbo.internal', 'arbo2026')}
               style={{
                 flex: 1,
                 padding: '8px',
@@ -233,7 +233,7 @@ export default function Login() {
             </button>
             <button
               type="button"
-              onClick={() => fillDemo('cajero@arbo.app', 'arbo2026')}
+              onClick={() => fillDemo('martin.cajero@arbo.internal', 'arbo2026')}
               style={{
                 flex: 1,
                 padding: '8px',
@@ -250,7 +250,7 @@ export default function Login() {
             </button>
             <button
               type="button"
-              onClick={() => fillDemo('admin.belgrano@arbo.app', 'arbo2026')}
+              onClick={() => fillDemo('lucia.duena@arbo.internal', 'arbo2026')}
               style={{
                 flex: 1,
                 padding: '8px',
