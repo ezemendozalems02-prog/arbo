@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
 import { COLORS, FONTS } from '../../../styles/theme'
-import { formatDate } from '../../utils/format'
+import { usePOS } from '../../../context/POSContext'
+import { formatInvoiceLabel } from '../../../services/domain/demoFiscalEmission'
+import { formatDate, formatMoney } from '../../utils/format'
 import { EmptyState } from '../../components/Panel'
 
-// Estado fiscal REAL de ARBO: todavía no emite comprobantes ante ARCA (ex
-// AFIP). Esta pantalla no muestra comprobantes, CAE, CUIT ni puntos de venta
-// inventados: los comprobantes solo pueden salir de una respuesta fiscal real
-// y persistida, y hoy no existe ninguna. Lo que sigue siendo demostración
-// (las automatizaciones) lleva la insignia "DEMO · Sin validez fiscal".
+// Pantalla Fiscal en MODO DEMOSTRACIÓN (homologación simulada). Muestra los
+// comprobantes simulados que genera el POS para ver el flujo de facturación,
+// SIEMPRE con el sello "DEMO · Sin validez fiscal": no se conectan con ARCA y
+// el CAE no tiene validez fiscal. La emisión real sigue pendiente (necesita
+// certificado + CUIT del contribuyente y un servicio de servidor).
 
 const DEMO_AUTOMATIONS = [
   { id: 'rule_01', name: 'Envío de Ticket Digital por WhatsApp', event_type: 'sale.completed', action_type: 'SEND_DIGITAL_TICKET' },
@@ -48,6 +50,8 @@ export default function FiscalDashboard() {
   }, [])
 
   const [activeTab, setActiveTab] = useState('invoices') // 'invoices' | 'contingency' | 'automations' | 'config'
+  const { fiscalInvoices = [] } = usePOS()
+  const demoInvoices = [...fiscalInvoices].reverse() // más recientes primero
 
   return (
     <div style={{ maxWidth: 1200, margin: '0 auto', paddingBottom: 40 }}>
@@ -58,31 +62,32 @@ export default function FiscalDashboard() {
             Facturación electrónica
           </h1>
           <p style={{ fontFamily: FONTS.sans, fontSize: 13, color: COLORS.onLightMuted, marginTop: 4 }}>
-            ARCA (ex AFIP) · No habilitada
+            ARCA (ex AFIP) · Modo demostración (homologación simulada)
           </p>
         </div>
         <span style={{
           fontFamily: FONTS.sans, fontSize: 11, fontWeight: 700, padding: '6px 12px', borderRadius: 4,
-          background: 'rgba(12,16,20,0.05)', color: COLORS.onLightMuted, border: `1px solid ${COLORS.lineGreen}`,
+          background: 'rgba(176,138,62,0.16)', color: '#6E5423', border: '1px solid rgba(176,138,62,0.4)',
+          letterSpacing: '0.06em', textTransform: 'uppercase',
         }}>
-          SIN CONEXIÓN CON ARCA
+          DEMO · Sin validez fiscal
         </span>
       </div>
 
       <div role="status" style={{ padding: '14px 18px', background: 'rgba(176,138,62,0.1)', border: '1px solid rgba(176,138,62,0.4)', marginBottom: 24 }}>
         <p style={{ fontFamily: FONTS.sans, fontSize: 13, fontWeight: 700, color: '#8A6A2E', margin: 0 }}>
-          Comprobante fiscal no emitido
+          Modo demostración · Homologación simulada · Sin validez fiscal
         </p>
         <p style={{ fontFamily: FONTS.sans, fontSize: 12, color: COLORS.onLightMuted, margin: '4px 0 0', lineHeight: 1.5 }}>
-          ARBO todavía no emite comprobantes fiscales ni se conecta con ARCA: las ventas del POS se registran sin factura ni CAE.
-          Habilitarlo requiere confirmar los datos fiscales con el contribuyente y su contador, y aprobar la homologación de ARCA.
+          Los comprobantes que ves acá son una SIMULACIÓN para mostrar el flujo de facturación: no se conectan con ARCA y el CAE no tiene validez fiscal.
+          La emisión real de homologación necesita, aparte, el certificado digital y el CUIT del contribuyente, y un servicio de servidor que firme ante AFIP.
         </p>
       </div>
 
       {/* Tabs */}
       <div style={{ display: 'flex', borderBottom: `1px solid ${COLORS.lineGreen}`, marginBottom: 24, gap: 12, overflowX: 'auto' }}>
         {[
-          { id: 'invoices', label: 'Comprobantes (0)' },
+          { id: 'invoices', label: `Comprobantes (${demoInvoices.length})` },
           { id: 'contingency', label: 'Contingencia (0)' },
           { id: 'automations', label: 'Automatizaciones (demo)' },
           { id: 'config', label: 'Datos del contribuyente' },
@@ -111,7 +116,31 @@ export default function FiscalDashboard() {
       {/* Tab: Comprobantes — solo comprobantes con respuesta real de ARCA guardada en la base. */}
       {activeTab === 'invoices' && (
         <div style={{ background: COLORS.warmWhite, border: `1px solid ${COLORS.lineGreen}` }}>
-          <EmptyState label="No hay comprobantes fiscales emitidos. Acá solo se van a listar comprobantes autorizados por ARCA y guardados en ARBO." />
+          {demoInvoices.length === 0 ? (
+            <EmptyState label="Todavía no hay comprobantes. Cobrá una venta en el POS y vas a ver acá su comprobante simulado (demo)." />
+          ) : (
+            demoInvoices.map((inv, i) => (
+              <div key={inv.id} style={{ padding: '14px 18px', borderTop: i > 0 ? `1px solid ${COLORS.lineGreen}` : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                <div style={{ minWidth: 0 }}>
+                  <p style={{ fontFamily: FONTS.sans, fontSize: 13, fontWeight: 700, color: COLORS.greenDark, margin: 0 }}>
+                    {formatInvoiceLabel(inv)} <span style={{ fontWeight: 500, color: COLORS.onLightMuted }}>· Venta #{String(inv.sale_number).padStart(4, '0')}</span>
+                  </p>
+                  <p style={{ fontFamily: 'monospace', fontSize: 11, color: COLORS.onLightMuted, margin: '3px 0 0', overflowWrap: 'anywhere' }}>
+                    CAE {inv.cae} · Vto {inv.cae_expires_at} · Neto {formatMoney(inv.net_amount)} · IVA {formatMoney(inv.vat_amount)}
+                  </p>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+                  <span style={{ fontFamily: FONTS.serif, fontSize: 16, fontWeight: 600, color: COLORS.greenDark }}>{formatMoney(inv.total_amount)}</span>
+                  <span style={{
+                    fontFamily: FONTS.sans, fontSize: 9, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase',
+                    color: '#6E5423', background: 'rgba(176,138,62,0.18)', border: '1px solid rgba(176,138,62,0.4)', padding: '3px 7px', borderRadius: 3, whiteSpace: 'nowrap',
+                  }}>
+                    DEMO
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
 
@@ -184,7 +213,7 @@ export default function FiscalDashboard() {
             ))}
           </div>
           <div style={{ marginTop: 24, padding: 12, background: 'rgba(48,77,59,0.06)', border: `1px solid ${COLORS.lineGreen}`, fontSize: 11, color: COLORS.onLightMuted, fontFamily: FONTS.sans, lineHeight: 1.5 }}>
-            Cuando se habilite, el certificado digital y su clave privada se van a guardar solo en el servidor, nunca en el navegador.
+            En el modo demostración se usa un CUIT de ejemplo y un CAE sintético, sin validez fiscal. Para la emisión real, el certificado digital y su clave privada se van a guardar solo en el servidor, nunca en el navegador.
           </div>
         </div>
       )}

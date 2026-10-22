@@ -5,6 +5,7 @@ import { PAYMENT_METHODS } from '../mock/orders'
 import { CURRENT_STAFF_NAME } from '../mock/staff'
 import { calcCashDifference, calcCashSummary } from '../services/cashCalculations'
 import { calcOrderTotals, modifiersSignature } from '../services/salesCalculations'
+import { buildDemoFiscalInvoice, DEMO_FISCAL_CONFIG } from '../services/domain/demoFiscalEmission'
 import { pointsForAmount, tierForPoints } from '../services/loyaltyService'
 import { buildTicketsFromOrder, calcOrderKitchenStatus } from '../services/kitchenService'
 
@@ -21,6 +22,7 @@ function initialState() {
     tables: INITIAL_TABLES,
     orders: {},
     sales: [],
+    fiscalInvoices: [],
     tickets: {},
     cashSessions: [],
     cash: { sessionId: null, status: 'cerrada', openedAt: null, closedAt: null, initialAmount: 0, movements: [], lastClosing: null },
@@ -362,6 +364,16 @@ export function POSProvider({ children }) {
       }
       createdSale = sale
 
+      // Facturación DEMO (homologación simulada · sin validez fiscal): adjunta un
+      // comprobante simulado a la venta para poder ver el estado fiscal en POS/Fiscal.
+      // NO es emisión real ante ARCA. Ver src/services/domain/demoFiscalEmission.js.
+      let nextFiscalInvoices = s.fiscalInvoices ?? []
+      if (DEMO_FISCAL_CONFIG.enabled) {
+        const invoice = buildDemoFiscalInvoice({ sale, fiscalInvoices: nextFiscalInvoices })
+        sale.fiscalInvoice = invoice
+        nextFiscalInvoices = [...nextFiscalInvoices, invoice]
+      }
+
       const { [orderId]: _discard, ...remainingOrders } = s.orders
       const cashOpen = s.cash.status === 'abierta'
       const movements = cashOpen
@@ -393,6 +405,7 @@ export function POSProvider({ children }) {
         ...s,
         orders: remainingOrders,
         sales: [...s.sales, sale],
+        fiscalInvoices: nextFiscalInvoices,
         saleSeq: s.saleSeq + 1,
         tickets: updatedTickets,
         cash: { ...s.cash, movements },
@@ -422,6 +435,7 @@ export function POSProvider({ children }) {
     tables: state.tables,
     orders: state.orders,
     sales: state.sales,
+    fiscalInvoices: state.fiscalInvoices ?? [],
     tickets: ticketList,
     cash: state.cash,
     cashSessions: state.cashSessions || [],

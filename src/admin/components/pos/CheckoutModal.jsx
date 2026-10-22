@@ -5,6 +5,7 @@ import AdminModal from '../AdminModal'
 import Button from '../../ui/Button'
 import { CheckIcon } from '../../../components/ui/icons'
 import { calcChange, calcOrderTotals, calcSplitEqual } from '../../../services/salesCalculations'
+import { formatInvoiceLabel } from '../../../services/domain/demoFiscalEmission'
 import { formatMoney, formatNumber } from '../../utils/format'
 
 const PAYMENT_LABELS = { efectivo: 'Efectivo', tarjeta: 'Tarjeta', mercado_pago: 'Mercado Pago', transferencia: 'Transferencia' }
@@ -49,24 +50,46 @@ export default function CheckoutModal({ order, open, onClose, onConfirmed }) {
               ARBO CLUB · +{formatNumber(completedSale.loyaltyPointsEarned)} puntos para {completedSale.customerName}
             </p>
           )}
-          {/* Estado fiscal: ARBO todavía no emite comprobantes ante ARCA. Ninguna
-              venta tiene factura ni CAE, así que no se muestra número, tipo de
-              comprobante ni CAE: eso solo puede salir de una respuesta fiscal
-              real y persistida. */}
-          <div role="status" style={{
-            background: 'rgba(176,138,62,0.1)',
-            border: '1px solid rgba(176,138,62,0.4)',
-            padding: '10px 14px',
-            marginBottom: 24,
-            textAlign: 'left',
-          }}>
-            <p style={{ fontFamily: FONTS.sans, fontSize: 12, fontWeight: 700, color: '#8A6A2E', margin: 0 }}>
-              Comprobante fiscal no emitido
-            </p>
-            <p style={{ fontFamily: FONTS.sans, fontSize: 12, color: COLORS.onLightMuted, margin: '4px 0 0', lineHeight: 1.45 }}>
-              Esta venta no tiene factura ni CAE. La facturación electrónica todavía no está habilitada en ARBO.
-            </p>
-          </div>
+          {/* Estado fiscal. Si la venta trae un comprobante DEMO (simulación de
+              homologación), se muestra con un sello imposible de confundir con
+              un comprobante real. Si no, se avisa que no se emitió. El CAE demo
+              NO tiene validez fiscal: no sale de una respuesta real de ARCA. */}
+          {completedSale.fiscalInvoice ? (
+            <div role="status" style={{
+              background: 'rgba(176,138,62,0.1)', border: '1px solid rgba(176,138,62,0.45)',
+              padding: '12px 14px', marginBottom: 24, textAlign: 'left',
+            }}>
+              <div style={{
+                display: 'inline-block', fontFamily: FONTS.sans, fontSize: 10, fontWeight: 700,
+                letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6E5423',
+                background: 'rgba(176,138,62,0.18)', border: '1px solid rgba(176,138,62,0.45)',
+                padding: '3px 8px', borderRadius: 3, marginBottom: 8,
+              }}>
+                DEMO · Homologación · Sin validez fiscal
+              </div>
+              <p style={{ fontFamily: FONTS.sans, fontSize: 13, fontWeight: 700, color: COLORS.greenDark, margin: 0 }}>
+                {formatInvoiceLabel(completedSale.fiscalInvoice)}
+              </p>
+              <p style={{ fontFamily: 'monospace', fontSize: 12, color: COLORS.onLightMuted, margin: '4px 0 0' }}>
+                CAE {completedSale.fiscalInvoice.cae} · Vto {completedSale.fiscalInvoice.cae_expires_at}
+              </p>
+              <p style={{ fontFamily: FONTS.sans, fontSize: 11, color: COLORS.onLightMuted, margin: '6px 0 0', lineHeight: 1.45 }}>
+                Comprobante simulado para demostración. No es válido ante ARCA/AFIP.
+              </p>
+            </div>
+          ) : (
+            <div role="status" style={{
+              background: 'rgba(176,138,62,0.1)', border: '1px solid rgba(176,138,62,0.4)',
+              padding: '10px 14px', marginBottom: 24, textAlign: 'left',
+            }}>
+              <p style={{ fontFamily: FONTS.sans, fontSize: 12, fontWeight: 700, color: '#8A6A2E', margin: 0 }}>
+                Comprobante fiscal no emitido
+              </p>
+              <p style={{ fontFamily: FONTS.sans, fontSize: 12, color: COLORS.onLightMuted, margin: '4px 0 0', lineHeight: 1.45 }}>
+                Esta venta no tiene factura ni CAE. La facturación electrónica todavía no está habilitada en ARBO.
+              </p>
+            </div>
+          )}
           <Button full onClick={finish}>Cerrar</Button>
         </div>
       </AdminModal>
