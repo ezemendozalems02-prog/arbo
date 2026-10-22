@@ -54,30 +54,44 @@ export default function CheckoutModal({ order, open, onClose, onConfirmed }) {
               homologación), se muestra con un sello imposible de confundir con
               un comprobante real. Si no, se avisa que no se emitió. El CAE demo
               NO tiene validez fiscal: no sale de una respuesta real de ARCA. */}
-          {completedSale.fiscalInvoice ? (
-            <div role="status" style={{
-              background: 'rgba(176,138,62,0.1)', border: '1px solid rgba(176,138,62,0.45)',
-              padding: '12px 14px', marginBottom: 24, textAlign: 'left',
-            }}>
-              <div style={{
-                display: 'inline-block', fontFamily: FONTS.sans, fontSize: 10, fontWeight: 700,
-                letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6E5423',
-                background: 'rgba(176,138,62,0.18)', border: '1px solid rgba(176,138,62,0.45)',
-                padding: '3px 8px', borderRadius: 3, marginBottom: 8,
+          {completedSale.fiscalInvoice ? (() => {
+            const fi = completedSale.fiscalInvoice
+            const statusLabel = { AUTHORIZED: 'Autorizado', REJECTED: 'Rechazado', PENDING_CONTINGENCY: 'En contingencia' }[fi.status] || fi.status
+            const line2 = fi.status === 'AUTHORIZED'
+              ? `CAE ${fi.cae} · Vto ${fi.cae_expires_at}`
+              : fi.status === 'REJECTED'
+                ? `Rechazado por AFIP (simulado)${fi.error_code ? ` · Error ${fi.error_code}` : ''}`
+                : 'AFIP no disponible (simulado) · en contingencia'
+            const note = fi.status === 'AUTHORIZED'
+              ? 'Comprobante simulado para demostración. No es válido ante ARCA/AFIP.'
+              : fi.status === 'REJECTED'
+                ? (fi.error_message || 'AFIP rechazó el comprobante (simulado).')
+                : 'El comprobante quedó en contingencia; se reintenta desde la pantalla Fiscal. No es válido ante ARCA/AFIP.'
+            return (
+              <div role="status" style={{
+                background: 'rgba(176,138,62,0.1)', border: '1px solid rgba(176,138,62,0.45)',
+                padding: '12px 14px', marginBottom: 24, textAlign: 'left',
               }}>
-                DEMO · Homologación · Sin validez fiscal
+                <div style={{
+                  display: 'inline-block', fontFamily: FONTS.sans, fontSize: 10, fontWeight: 700,
+                  letterSpacing: '0.08em', textTransform: 'uppercase', color: '#6E5423',
+                  background: 'rgba(176,138,62,0.18)', border: '1px solid rgba(176,138,62,0.45)',
+                  padding: '3px 8px', borderRadius: 3, marginBottom: 8,
+                }}>
+                  DEMO · Homologación · Sin validez fiscal
+                </div>
+                <p style={{ fontFamily: FONTS.sans, fontSize: 13, fontWeight: 700, color: COLORS.greenDark, margin: 0 }}>
+                  {formatInvoiceLabel(fi)} · {statusLabel}
+                </p>
+                <p style={{ fontFamily: 'monospace', fontSize: 12, color: COLORS.onLightMuted, margin: '4px 0 0' }}>
+                  {line2}
+                </p>
+                <p style={{ fontFamily: FONTS.sans, fontSize: 11, color: COLORS.onLightMuted, margin: '6px 0 0', lineHeight: 1.45 }}>
+                  {note}
+                </p>
               </div>
-              <p style={{ fontFamily: FONTS.sans, fontSize: 13, fontWeight: 700, color: COLORS.greenDark, margin: 0 }}>
-                {formatInvoiceLabel(completedSale.fiscalInvoice)}
-              </p>
-              <p style={{ fontFamily: 'monospace', fontSize: 12, color: COLORS.onLightMuted, margin: '4px 0 0' }}>
-                CAE {completedSale.fiscalInvoice.cae} · Vto {completedSale.fiscalInvoice.cae_expires_at}
-              </p>
-              <p style={{ fontFamily: FONTS.sans, fontSize: 11, color: COLORS.onLightMuted, margin: '6px 0 0', lineHeight: 1.45 }}>
-                Comprobante simulado para demostración. No es válido ante ARCA/AFIP.
-              </p>
-            </div>
-          ) : (
+            )
+          })() : (
             <div role="status" style={{
               background: 'rgba(176,138,62,0.1)', border: '1px solid rgba(176,138,62,0.4)',
               padding: '10px 14px', marginBottom: 24, textAlign: 'left',

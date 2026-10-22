@@ -5,7 +5,7 @@ import { PAYMENT_METHODS } from '../mock/orders'
 import { CURRENT_STAFF_NAME } from '../mock/staff'
 import { calcCashDifference, calcCashSummary } from '../services/cashCalculations'
 import { calcOrderTotals, modifiersSignature } from '../services/salesCalculations'
-import { buildDemoFiscalInvoice, DEMO_FISCAL_CONFIG } from '../services/domain/demoFiscalEmission'
+import { buildDemoFiscalInvoice, authorizeContingencyInvoice, DEMO_FISCAL_CONFIG } from '../services/domain/demoFiscalEmission'
 import { pointsForAmount, tierForPoints } from '../services/loyaltyService'
 import { buildTicketsFromOrder, calcOrderKitchenStatus } from '../services/kitchenService'
 
@@ -23,6 +23,7 @@ function initialState() {
     orders: {},
     sales: [],
     fiscalInvoices: [],
+    fiscalDemoMode: 'SUCCESS', // respuesta de AFIP simulada: SUCCESS | REJECTION | CONTINGENCY
     tickets: {},
     cashSessions: [],
     cash: { sessionId: null, status: 'cerrada', openedAt: null, closedAt: null, initialAmount: 0, movements: [], lastClosing: null },
@@ -369,7 +370,7 @@ export function POSProvider({ children }) {
       // NO es emisión real ante ARCA. Ver src/services/domain/demoFiscalEmission.js.
       let nextFiscalInvoices = s.fiscalInvoices ?? []
       if (DEMO_FISCAL_CONFIG.enabled) {
-        const invoice = buildDemoFiscalInvoice({ sale, fiscalInvoices: nextFiscalInvoices })
+        const invoice = buildDemoFiscalInvoice({ sale, fiscalInvoices: nextFiscalInvoices, mode: s.fiscalDemoMode })
         sale.fiscalInvoice = invoice
         nextFiscalInvoices = [...nextFiscalInvoices, invoice]
       }
@@ -421,6 +422,20 @@ export function POSProvider({ children }) {
     return createdSale
   }, [counterOrderId])
 
+  // --- Facturación DEMO (homologación simulada) ---
+  const setFiscalDemoMode = useCallback((mode) => {
+    setState(s => ({ ...s, fiscalDemoMode: mode }))
+  }, [])
+
+  const retryContingency = useCallback((invoiceId) => {
+    setState(s => ({
+      ...s,
+      fiscalInvoices: (s.fiscalInvoices ?? []).map(inv =>
+        inv.id === invoiceId && inv.status === 'PENDING_CONTINGENCY' ? authorizeContingencyInvoice(inv) : inv
+      ),
+    }))
+  }, [])
+
   const getCustomerWithLivePoints = useCallback((customerId) => {
     const base = getCustomerById(customerId)
     if (!base) return null
@@ -436,6 +451,8 @@ export function POSProvider({ children }) {
     orders: state.orders,
     sales: state.sales,
     fiscalInvoices: state.fiscalInvoices ?? [],
+    fiscalDemoMode: state.fiscalDemoMode ?? 'SUCCESS',
+    setFiscalDemoMode, retryContingency,
     tickets: ticketList,
     cash: state.cash,
     cashSessions: state.cashSessions || [],
